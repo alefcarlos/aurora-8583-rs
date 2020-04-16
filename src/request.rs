@@ -1,4 +1,4 @@
-use crate::iso_8583::{ISOMessage, MessageTypeIndicator};
+use crate::iso_8583::{Card, ISOMessage, MessageTypeIndicator};
 use std::{collections::HashMap, convert::TryFrom};
 
 const REQUIRED_DE_0100: &str = "0|2";
@@ -74,8 +74,44 @@ impl TryFrom<&ISORequestMessage> for ISOMessage {
 
         return Ok(ISOMessage {
             mti,
-            card_number: request.get_evaluated_info("2".to_string()),
+            card: Card::try_from(request)?,
         });
+    }
+}
+
+impl TryFrom<&ISORequestMessage> for Card {
+    type Error = &'static str;
+
+    fn try_from(request: &ISORequestMessage) -> Result<Self, Self::Error> {
+        if !request.is_valid() {
+            return Err("Request has an invalid state!");
+        }
+
+        Ok(Card {
+            sequence: "0".to_string(),
+            number: request.get_evaluated_info("2".to_string()),
+        })
+    }
+}
+
+impl TryFrom<&ISORequestMessage> for MessageTypeIndicator {
+    type Error = &'static str;
+
+    fn try_from(request: &ISORequestMessage) -> Result<Self, Self::Error> {
+        let mti = request.get_mti();
+
+        if mti.is_none() {
+            return Err("Request has an invalid MTI!");
+        }
+
+        //QUE BOXTA: https://stackoverflow.com/questions/48034119/how-can-i-pattern-match-against-an-optionstring
+        let mti = mti.as_ref().map(String::as_str);
+
+        return match mti {
+            Some("0100") => Ok(MessageTypeIndicator::AuthorizationRequest),
+            Some("0400") => Ok(MessageTypeIndicator::ReversalRequest),
+            _ => Err("MTI is not supported"),
+        };
     }
 }
 
@@ -172,7 +208,7 @@ mod tests {
 
         let unwrap_iso = iso.unwrap();
         assert_eq!(unwrap_iso.mti, MessageTypeIndicator::AuthorizationRequest);
-        assert_eq!(unwrap_iso.card_number, "5276600404324025");
+        assert_eq!(unwrap_iso.card.number, "5276600404324025");
     }
 
     #[test]
