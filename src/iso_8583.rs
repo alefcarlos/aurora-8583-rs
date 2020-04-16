@@ -30,8 +30,8 @@ impl TryFrom<&ISORequestMessage> for MessageTypeIndicator {
 
 ///An struct to represent ISO 8583-1
 pub struct ISOMessage {
-    mti: MessageTypeIndicator,
-    card_number: String,
+    pub mti: MessageTypeIndicator,
+    pub card_number: String,
 }
 
 impl fmt::Display for MessageTypeIndicator {
@@ -43,88 +43,3 @@ impl fmt::Display for MessageTypeIndicator {
     }
 }
 
-impl TryFrom<&ISORequestMessage> for ISOMessage {
-    type Error = &'static str;
-
-    fn try_from(request: &ISORequestMessage) -> Result<Self, Self::Error> {
-        if !request.is_valid() {
-            return Err("Request has an invalid state!");
-        }
-
-        let mti = MessageTypeIndicator::try_from(request)?;
-
-        return Ok(ISOMessage {
-            mti,
-            card_number: request.get_evaluated_info("2".to_string()),
-        });
-    }
-}
-
-
-mod tests {
-    // Note this useful idiom: importing names from outer (for mod tests) scope.
-    use super::*;
-    use crate::request::Field;
-    use crate::request::ISORequestMessage;
-
-    #[test]
-    fn test_parse_request_should_be_success() {
-        let fields = vec![
-            Field {
-                id: "0".to_string(),
-                value: "0100".to_string(),
-            },
-            Field {
-                id: "2".to_string(),
-                value: "5276600404324025".to_string(),
-            },
-        ];
-
-        let request = ISORequestMessage { fields };
-
-        let iso = ISOMessage::try_from(&request);
-        
-        assert_eq!(iso.is_ok(), true);
-
-        let unwrap_iso = iso.unwrap();
-        assert_eq!(unwrap_iso.mti, MessageTypeIndicator::AuthorizationRequest);
-        assert_eq!(unwrap_iso.card_number, "5276600404324025");
-    }
-
-    #[test]
-    fn test_parse_mti_from_request_should_be_success() {
-        let fields = vec![
-            Field {
-                id: "0".to_string(),
-                value: "0100".to_string(),
-            },
-            Field {
-                id: "2".to_string(),
-                value: "5276600404324025".to_string(),
-            },
-        ];
-
-        let request = ISORequestMessage { fields };
-        assert_eq!(request.is_valid(), true);
-
-        let iso = ISOMessage::try_from(&request);
-        assert_eq!(iso.is_ok(), true);
-
-        let unwrap_iso = iso.unwrap();
-        assert_eq!(unwrap_iso.mti, MessageTypeIndicator::AuthorizationRequest);
-    }
-
-    #[test]
-    fn test_parse_mti_from_request_should_be_invalid() {
-        let fields = vec![Field {
-            id: "1".to_string(),
-            value: "0100".to_string(),
-        }];
-
-        let request = ISORequestMessage { fields };
-
-        let iso = ISOMessage::try_from(&request);
-
-        assert_eq!(iso.is_err(), true);
-    }
-}

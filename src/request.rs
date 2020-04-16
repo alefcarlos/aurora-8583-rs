@@ -1,4 +1,5 @@
-use std::collections::HashMap;
+use crate::iso_8583::{ISOMessage, MessageTypeIndicator};
+use std::{collections::HashMap, convert::TryFrom};
 
 const REQUIRED_DE_0100: &str = "0|2";
 const REQUIRED_DE_0400: &str = "0|1|2";
@@ -15,7 +16,7 @@ pub struct ISORequestMessage {
 impl ISORequestMessage {
     ///Gets value from DE
     pub fn get_info(&self, id: String) -> Option<String> {
-        let item = self.fields.iter().find(|&field: &&Field| field.id == id);
+        let item = self.fields.iter().find(|&field| field.id == id);
 
         return match item {
             None => None,
@@ -47,27 +48,36 @@ impl ISORequestMessage {
 
         let vec: Vec<&str> = required.split('|').collect();
 
-        return vec
-            .iter()
-            .all(|&de| self.fields.iter().any(|field| field.id.as_str() == de));
+        vec.iter()
+            .all(|&de| self.fields.iter().any(|field| field.id.as_str() == de))
     }
 
     //Validates if MTI was informed
     pub fn has_valid_mti(&self) -> bool {
-        return match self.get_mti() {
-            Some(_) => true,
-            _ => false,
-        };
+        self.get_mti().is_some()
     }
 
     pub fn get_mti(&self) -> Option<String> {
-        return match self.get_info("0".to_string()) {
-            Some(x) => Some(x),
-            _ => None,
-        };
+        self.get_info("0".to_string())
     }
 }
 
+impl TryFrom<&ISORequestMessage> for ISOMessage {
+    type Error = &'static str;
+
+    fn try_from(request: &ISORequestMessage) -> Result<Self, Self::Error> {
+        if !request.is_valid() {
+            return Err("Request has an invalid state!");
+        }
+
+        let mti = MessageTypeIndicator::try_from(request)?;
+
+        return Ok(ISOMessage {
+            mti,
+            card_number: request.get_evaluated_info("2".to_string()),
+        });
+    }
+}
 
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
@@ -139,5 +149,66 @@ mod tests {
 
         assert_eq!(request.has_valid_mti(), false);
         assert_eq!(request.get_info("0".to_string()), None);
+    }
+
+    #[test]
+    fn test_parse_request_should_be_success() {
+        let fields = vec![
+            Field {
+                id: "0".to_string(),
+                value: "0100".to_string(),
+            },
+            Field {
+                id: "2".to_string(),
+                value: "5276600404324025".to_string(),
+            },
+        ];
+
+        let request = ISORequestMessage { fields };
+
+        let iso = ISOMessage::try_from(&request);
+
+        assert_eq!(iso.is_ok(), true);
+
+        let unwrap_iso = iso.unwrap();
+        assert_eq!(unwrap_iso.mti, MessageTypeIndicator::AuthorizationRequest);
+        assert_eq!(unwrap_iso.card_number, "5276600404324025");
+    }
+
+    #[test]
+    fn test_parse_mti_from_request_should_be_success() {
+        let fields = vec![
+            Field {
+                id: "0".to_string(),
+                value: "0100".to_string(),
+            },
+            Field {
+                id: "2".to_string(),
+                value: "5276600404324025".to_string(),
+            },
+        ];
+
+        let request = ISORequestMessage { fields };
+        assert_eq!(request.is_valid(), true);
+
+        let iso = ISOMessage::try_from(&request);
+        assert_eq!(iso.is_ok(), true);
+
+        let unwrap_iso = iso.unwrap();
+        assert_eq!(unwrap_iso.mti, MessageTypeIndicator::AuthorizationRequest);
+    }
+
+    #[test]
+    fn test_parse_mti_from_request_should_be_invalid() {
+        let fields = vec![Field {
+            id: "1".to_string(),
+            value: "0100".to_string(),
+        }];
+
+        let request = ISORequestMessage { fields };
+
+        let iso = ISOMessage::try_from(&request);
+
+        assert_eq!(iso.is_err(), true);
     }
 }
