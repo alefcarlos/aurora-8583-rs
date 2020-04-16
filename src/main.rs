@@ -1,5 +1,8 @@
 use std::fmt;
 
+const REQUIRED_DE_0100: &str = "0|2";
+const REQUIRED_DE_0400: &str = "0|1|2";
+
 fn main() {
     println!("Hello, world!");
 
@@ -15,11 +18,11 @@ fn main() {
     ];
 
     let request = ISORequestMessage { fields };
+    println!("Total: {}", request.fields.capacity());
+
+    println!("requrest is valid? {}", request.validate());
 
     let mti = request.get_info("0".to_string());
-
-    println!("Total: {}", request.fields.capacity());
-    println!("mti is some? {}", mti.is_some());
 
     match mti {
         None => println!("MTI was not provided"),
@@ -27,7 +30,7 @@ fn main() {
     }
 
     let iso = ISOMessage::from(request);
-    println!("mti {}", iso.mti);
+    println!("enum mti {}", iso.mti);
 }
 
 struct ISORequestMessage {
@@ -35,12 +38,33 @@ struct ISORequestMessage {
 }
 
 impl ISORequestMessage {
+    ///Gets value from DE
     fn get_info(&self, id: String) -> Option<String> {
         let item = self.fields.iter().find(|field: &&Field| field.id == id);
 
         return match item {
             None => None,
             Some(x) => Some(x.value.clone()),
+        };
+    }
+
+    ///Validates if all the required DE were provided
+    fn validate(&self) -> bool {
+        //without mti we cant perform validation
+        if !self.validate_mti() {
+            return false;
+        }
+
+        //Get required de info
+
+        return true;
+    }
+
+    //Validates if MTI was informed
+    fn validate_mti(&self) -> bool {
+        return match self.get_info("0".to_string()) {
+            Some(_) => true,
+            _ => false,
         };
     }
 }
@@ -57,10 +81,9 @@ enum MessageTypeIndicator {
 
 impl fmt::Display for MessageTypeIndicator {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-
         match self {
-            MessageTypeIndicator::AuthorizationRequest=> write!(f, "AuthorizationRequest(0100)"),
-            MessageTypeIndicator::ReversalRequest=> write!(f, "ReversalRequest(0400"),
+            MessageTypeIndicator::AuthorizationRequest => write!(f, "AuthorizationRequest(0100)"),
+            MessageTypeIndicator::ReversalRequest => write!(f, "ReversalRequest(0400"),
         }
     }
 }

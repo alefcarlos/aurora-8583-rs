@@ -1,5 +1,5 @@
 [package]
-name = "authflow_rust"
+name = "authflow"
 version = "0.1.0"
 authors = ["Alef Carlos <alef.carlos@gmail.com>"]
 edition = "2018"
