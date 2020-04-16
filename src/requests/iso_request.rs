@@ -1,6 +1,6 @@
-use std::{collections::HashMap, convert::TryFrom};
 use super::Field;
 use crate::domain::*;
+use std::{collections::HashMap, convert::TryFrom};
 
 const REQUIRED_DE_0100: &str = "0|2";
 const REQUIRED_DE_0400: &str = "0|1|2";
@@ -10,10 +10,8 @@ pub struct ISORequest {
 }
 
 impl ISORequest {
-    pub fn new(fields: Vec<Field>) -> Self{
-        ISORequest {
-            fields
-        }
+    pub fn new(fields: Vec<Field>) -> Self {
+        ISORequest { fields }
     }
 }
 
@@ -22,16 +20,16 @@ impl ISORequest {
     pub fn get_info(&self, id: String) -> Option<String> {
         let item = self.fields.iter().find(|&field| field.id == id);
 
-        return match item {
+        match item {
             None => None,
             Some(x) => Some(x.value.clone()),
-        };
+        }
     }
 
     ///Gets value from DE
     pub fn get_evaluated_info(&self, id: String) -> String {
         let value = self.get_info(id);
-        return value.unwrap_or_default();
+        value.unwrap_or_default()
     }
 
     ///Validates if all the required DE were provided
@@ -67,29 +65,29 @@ impl ISORequest {
 }
 
 impl TryFrom<&ISORequest> for ISOMessage {
-    type Error = &'static str;
+    type Error = ISOMessageError;
 
     fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
         if !request.is_valid() {
-            return Err("Request has an invalid state!");
+            return Err(ISOMessageError::RequiredDE);
         }
 
         let mti = MessageTypeIndicator::try_from(request)?;
 
-        return Ok(ISOMessage {
+        Ok(ISOMessage {
             mti,
             card: Card::try_from(request)?,
-            password: Password::try_from(request)?
-        });
+            password: Password::try_from(request)?,
+        })
     }
 }
 
 impl TryFrom<&ISORequest> for Card {
-    type Error = &'static str;
+    type Error = ISOMessageError;
 
     fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
         if !request.is_valid() {
-            return Err("Request has an invalid state!");
+            return Err(ISOMessageError::RequiredDE);
         }
 
         Ok(Card {
@@ -100,11 +98,11 @@ impl TryFrom<&ISORequest> for Card {
 }
 
 impl TryFrom<&ISORequest> for Password {
-    type Error = &'static str;
+    type Error = ISOMessageError;
 
     fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
         if !request.is_valid() {
-            return Err("Request has an invalid state!");
+            return Err(ISOMessageError::RequiredDE);
         }
 
         Ok(Password {
@@ -114,22 +112,18 @@ impl TryFrom<&ISORequest> for Password {
 }
 
 impl TryFrom<&ISORequest> for MessageTypeIndicator {
-    type Error = &'static str;
+    type Error = ISOMessageError;
 
     fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
-        let mti = request.get_mti();
-
-        if mti.is_none() {
-            return Err("Request has an invalid MTI!");
-        }
-
-        //QUE BOXTA: https://stackoverflow.com/questions/48034119/how-can-i-pattern-match-against-an-optionstring
-        let mti = mti.as_ref().map(String::as_str);
-
-        return match mti {
-            Some("0100") => Ok(MessageTypeIndicator::AuthorizationRequest),
-            Some("0400") => Ok(MessageTypeIndicator::ReversalRequest),
-            _ => Err("MTI is not supported"),
+        let mti = match request.get_mti() {
+            Some(v) => v,
+            None => return Err(ISOMessageError::UnsuppotedMTI),
         };
+
+        match mti.as_str() {
+            "0100" => Ok(MessageTypeIndicator::AuthorizationRequest),
+            "0400" => Ok(MessageTypeIndicator::ReversalRequest),
+            _ => Err(ISOMessageError::UnsuppotedMTI),
+        }
     }
 }

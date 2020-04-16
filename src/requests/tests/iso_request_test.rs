@@ -134,5 +134,6 @@ mod tests {
         let iso = ISOMessage::try_from(&request);
 
         assert_eq!(iso.is_err(), true);
+        assert_eq!(iso.unwrap_err(), ISOMessageError::RequiredDE);
     }
 }
