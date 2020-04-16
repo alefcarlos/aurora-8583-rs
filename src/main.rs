@@ -73,7 +73,8 @@ struct Field {
     id: String,
     value: String,
 }
-
+#[derive(PartialEq)]
+#[derive(Debug)]
 enum MessageTypeIndicator {
     AuthorizationRequest,
     ReversalRequest,
@@ -100,5 +101,92 @@ impl ISOMessage {
             mti: MessageTypeIndicator::AuthorizationRequest,
             card_number: "5276600404324025".to_string(),
         };
+    }
+}
+
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_request_should_has_valid_state() {
+        let fields = vec![
+            Field {
+                id: "0".to_string(),
+                value: "0100".to_string(),
+            },
+            Field {
+                id: "2".to_string(),
+                value: "5276600404324025".to_string(),
+            },
+        ];
+
+        let request = ISORequestMessage { fields };
+
+        assert_eq!(request.validate(), true);
+    }
+
+    #[test]
+    fn test_request_should_has_invalid_state() {
+        let fields = vec![Field {
+            id: "2".to_string(),
+            value: "5276600404324025".to_string(),
+        }];
+
+        let request = ISORequestMessage { fields };
+
+        assert_eq!(request.validate(), false);
+    }
+
+    #[test]
+    fn test_request_should_has_valid_mti() {
+        let fields = vec![
+            Field {
+                id: "0".to_string(),
+                value: "0100".to_string(),
+            },
+            Field {
+                id: "2".to_string(),
+                value: "5276600404324025".to_string(),
+            },
+        ];
+
+        let request = ISORequestMessage { fields };
+
+        assert_eq!(request.validate_mti(), true);
+        assert_eq!(request.get_info("0".to_string()), Some("0100".to_string()));
+    }
+
+    #[test]
+    fn test_request_should_has_invalid_mti() {
+        let fields = vec![
+            Field {
+                id: "0".to_string(),
+                value: "0100".to_string(),
+            },
+            Field {
+                id: "2".to_string(),
+                value: "5276600404324025".to_string(),
+            },
+        ];
+
+        let request = ISORequestMessage { fields };
+
+        assert_eq!(request.validate_mti(), false);
+        assert_eq!(request.get_info("0".to_string()), None);
+    }
+
+    #[test]
+    fn test_parse_request_should_be_success() {
+        let fields = vec![Field {
+            id: "2".to_string(),
+            value: "5276600404324025".to_string(),
+        }];
+
+        let request = ISORequestMessage { fields };
+
+        let iso = ISOMessage::from(request);
+
+        assert_eq!(iso.mti, MessageTypeIndicator::AuthorizationRequest);
     }
 }
