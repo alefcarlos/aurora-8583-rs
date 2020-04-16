@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fmt;
 
 const REQUIRED_DE_0100: &str = "0|2";
@@ -23,7 +24,7 @@ fn main() {
         panic!("Required DE were not provided");
     }
 
-    let iso = ISOMessage::from(&request);
+    let _iso = ISOMessage::from(&request);
     println!("Happy end!");
 }
 
@@ -34,7 +35,7 @@ struct ISORequestMessage {
 impl ISORequestMessage {
     ///Gets value from DE
     fn get_info(&self, id: String) -> Option<String> {
-        let item = self.fields.iter().find(|field: &&Field| field.id == id);
+        let item = self.fields.iter().find(|&field: &&Field| field.id == id);
 
         return match item {
             None => None,
@@ -56,8 +57,19 @@ impl ISORequestMessage {
         }
 
         //Get required de info
-        //TODO
-        return true;
+        let mti = self.get_mti().unwrap();
+
+        let mut required_de = HashMap::new();
+        required_de.insert("0100", REQUIRED_DE_0100);
+        required_de.insert("0400", REQUIRED_DE_0400);
+
+        let required = required_de[mti.as_str()];
+
+        let vec: Vec<&str> = required.split('|').collect();
+
+        return vec
+            .iter()
+            .all(|&de| self.fields.iter().any(|field| field.id.as_str() == de));
     }
 
     //Validates if MTI was informed
@@ -235,12 +247,19 @@ mod tests {
 
     #[test]
     fn test_parse_mti_from_request_should_be_success() {
-        let fields = vec![Field {
-            id: "0".to_string(),
-            value: "0100".to_string(),
-        }];
+        let fields = vec![
+            Field {
+                id: "0".to_string(),
+                value: "0100".to_string(),
+            },
+            Field {
+                id: "2".to_string(),
+                value: "5276600404324025".to_string(),
+            },
+        ];
 
         let request = ISORequestMessage { fields };
+        assert_eq!(request.is_valid(), true);
 
         let iso = ISOMessage::from(&request);
         assert_eq!(iso.is_some(), true);
