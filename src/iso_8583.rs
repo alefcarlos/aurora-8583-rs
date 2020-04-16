@@ -17,12 +17,21 @@ impl fmt::Display for MessageTypeIndicator {
 
 ///An struct to represent ISO 8583-1
 pub struct ISOMessage {
+    // DE 01
     pub mti: MessageTypeIndicator,
     pub card: Card,
-}
+    pub password : Password
+}   
 
 pub struct Card {
+    /// DE 02
     pub number: String,
+
+    /// DE 23
     pub sequence: String,
 }
 
+pub struct Password {
+    /// DE 52
+    pub value: String
+}

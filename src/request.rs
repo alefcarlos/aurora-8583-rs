@@ -1,4 +1,4 @@
-use crate::iso_8583::{Card, ISOMessage, MessageTypeIndicator};
+use crate::iso_8583::{Card, ISOMessage, MessageTypeIndicator, Password};
 use std::{collections::HashMap, convert::TryFrom};
 
 const REQUIRED_DE_0100: &str = "0|2";
@@ -10,7 +10,15 @@ pub struct Field {
 }
 
 pub struct ISORequestMessage {
-    pub fields: Vec<Field>,
+    fields: Vec<Field>,
+}
+
+impl ISORequestMessage {
+    fn new(fields: Vec<Field>) -> Self{
+        ISORequestMessage {
+            fields
+        }
+    }
 }
 
 impl ISORequestMessage {
@@ -75,6 +83,7 @@ impl TryFrom<&ISORequestMessage> for ISOMessage {
         return Ok(ISOMessage {
             mti,
             card: Card::try_from(request)?,
+            password: Password::try_from(request)?
         });
     }
 }
@@ -90,6 +99,20 @@ impl TryFrom<&ISORequestMessage> for Card {
         Ok(Card {
             sequence: "0".to_string(),
             number: request.get_evaluated_info("2".to_string()),
+        })
+    }
+}
+
+impl TryFrom<&ISORequestMessage> for Password {
+    type Error = &'static str;
+
+    fn try_from(request: &ISORequestMessage) -> Result<Self, Self::Error> {
+        if !request.is_valid() {
+            return Err("Request has an invalid state!");
+        }
+
+        Ok(Password {
+            value: request.get_evaluated_info("52".to_string()),
         })
     }
 }
@@ -132,7 +155,7 @@ mod tests {
             },
         ];
 
-        let request = ISORequestMessage { fields };
+        let request = ISORequestMessage::new(fields);
 
         assert_eq!(request.is_valid(), true);
     }
@@ -144,7 +167,7 @@ mod tests {
             value: "5276600404324025".to_string(),
         }];
 
-        let request = ISORequestMessage { fields };
+        let request = ISORequestMessage::new(fields);
 
         assert_eq!(request.is_valid(), false);
     }
@@ -162,7 +185,7 @@ mod tests {
             },
         ];
 
-        let request = ISORequestMessage { fields };
+        let request = ISORequestMessage::new(fields);
 
         assert_eq!(request.has_valid_mti(), true);
         assert_eq!(request.get_info("0".to_string()), Some("0100".to_string()));
@@ -181,7 +204,7 @@ mod tests {
             },
         ];
 
-        let request = ISORequestMessage { fields };
+        let request = ISORequestMessage::new(fields);
 
         assert_eq!(request.has_valid_mti(), false);
         assert_eq!(request.get_info("0".to_string()), None);
@@ -200,7 +223,7 @@ mod tests {
             },
         ];
 
-        let request = ISORequestMessage { fields };
+        let request = ISORequestMessage::new(fields);
 
         let iso = ISOMessage::try_from(&request);
 
@@ -224,7 +247,8 @@ mod tests {
             },
         ];
 
-        let request = ISORequestMessage { fields };
+        let request = ISORequestMessage::new(fields);
+
         assert_eq!(request.is_valid(), true);
 
         let iso = ISOMessage::try_from(&request);
@@ -241,7 +265,7 @@ mod tests {
             value: "0100".to_string(),
         }];
 
-        let request = ISORequestMessage { fields };
+        let request = ISORequestMessage::new(fields);
 
         let iso = ISOMessage::try_from(&request);
 
