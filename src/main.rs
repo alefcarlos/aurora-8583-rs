@@ -1,12 +1,11 @@
 mod domain;
 mod requests;
 
-use domain::ISOMessage;
+use domain::{ISOMessage, TransactionType};
 use requests::*;
 use std::convert::TryFrom;
 
 fn main() {
-
     println!("Hello, world!");
 
     let fields = vec![
@@ -24,15 +23,18 @@ fn main() {
         },
         Field {
             id: "22".to_string(),
-            value: "051".to_string(),
+            value: "81".to_string(),
         },
     ];
 
     let request = ISORequest::new(fields);
-    let iso = ISOMessage::try_from(&request);
 
-    match iso {
-        Ok(result) => println!("{}", result.mti),
-        _ => print!("acabou"),
+    //Aplicar formatador de entrada
+    let transaction = TransactionType::try_from(&request);
+    let transaction = transaction.expect("Falha ao tentar fazer o try_from");
+
+    match transaction {
+        TransactionType::OlinePurchase(m) => println!("{}", m.mti),
+        _ => println!("Acabou"),
     }
 }

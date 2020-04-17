@@ -6,6 +6,7 @@ pub enum ISOMessageError {
     UnsuppotedMTI,
     UnsupportedPCode,
     UnsupportedPEM,
+    UnsupportedTransaction,
 }
 
 impl Error for ISOMessageError {}
@@ -17,6 +18,7 @@ impl fmt::Display for ISOMessageError {
             ISOMessageError::UnsuppotedMTI => write!(f, "Value is not valid for MessageTypeIndicator."),
             ISOMessageError::UnsupportedPCode => write!(f, "Value is not valid for PCode."),
             ISOMessageError::UnsupportedPEM => write!(f, "Value is not valid for PEM."),
+            ISOMessageError::UnsupportedTransaction => write!(f, "This transaction is not supported."),
         }
     }
 }

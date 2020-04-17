@@ -21,8 +21,8 @@ impl ISORequest {
         let item = self.fields.iter().find(|&field| field.id == id);
 
         match item {
-            None => None,
             Some(x) => Some(x.value.clone()),
+            None => None,
         }
     }
 

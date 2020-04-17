@@ -1,5 +1,6 @@
 use std::fmt;
 
+
 #[derive(PartialEq, Debug)]
 pub enum MessageTypeIndicator {
     AuthorizationRequest,
@@ -40,7 +41,7 @@ pub enum POSEntryMode {
 }
 
 ///An struct to represent ISO 8583-1
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct ISOMessage {
     /// DE 01
     pub mti: MessageTypeIndicator,
@@ -58,7 +59,7 @@ pub struct ISOMessage {
     pub password: Password,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Card {
     /// DE 02
     pub number: String,
@@ -67,7 +68,7 @@ pub struct Card {
     pub sequence: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Password {
     /// DE 52
     pub value: String,
