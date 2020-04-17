@@ -2,8 +2,8 @@ use super::Field;
 use crate::domain::*;
 use std::{collections::HashMap, convert::TryFrom};
 
-const REQUIRED_DE_0100: &str = "0|2";
-const REQUIRED_DE_0400: &str = "0|1|2";
+const REQUIRED_DE_0100: &str = "0|2|3|22";
+const REQUIRED_DE_0400: &str = "0|2";
 
 pub struct ISORequest {
     fields: Vec<Field>,
@@ -76,6 +76,8 @@ impl TryFrom<&ISORequest> for ISOMessage {
 
         Ok(ISOMessage {
             mti,
+            pcode: PCode::try_from(request)?,
+            pem: POSEntryMode::try_from(request)?,
             card: Card::try_from(request)?,
             password: Password::try_from(request)?,
         })
@@ -124,6 +126,54 @@ impl TryFrom<&ISORequest> for MessageTypeIndicator {
             "0100" => Ok(MessageTypeIndicator::AuthorizationRequest),
             "0400" => Ok(MessageTypeIndicator::ReversalRequest),
             _ => Err(ISOMessageError::UnsuppotedMTI),
+        }
+    }
+}
+
+impl TryFrom<&ISORequest> for PCode {
+    type Error = ISOMessageError;
+
+    fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
+        if !request.is_valid() {
+            return Err(ISOMessageError::RequiredDE);
+        }
+
+        let pcode = request.get_evaluated_info("3".to_string());
+        let pcode = &pcode[0..2];
+
+        match pcode {
+            "00" => Ok(PCode::Purchase),
+            "01" => Ok(PCode::Withdraw),
+            "20" => Ok(PCode::Consultation),
+            "17" => Ok(PCode::WithdrawDisbursement),
+            "28" => Ok(PCode::Charge),
+            _ => Err(ISOMessageError::UnsupportedPCode),
+        }
+    }
+}
+
+impl TryFrom<&ISORequest> for POSEntryMode {
+    type Error = ISOMessageError;
+
+    fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
+        if !request.is_valid() {
+            return Err(ISOMessageError::RequiredDE);
+        }
+
+        let pcode = request.get_evaluated_info("22".to_string());
+        let pcode = &pcode[0..2];
+
+        match pcode {
+            "01" => Ok(POSEntryMode::Manual),
+            "02" => Ok(POSEntryMode::MagneticStripe),
+            "05" => Ok(POSEntryMode::Chip),
+            "07" => Ok(POSEntryMode::Contactless),
+            "10" => Ok(POSEntryMode::CredentialOnFile),
+            "79" => Ok(POSEntryMode::HybridTerminal),
+            "80" => Ok(POSEntryMode::MagneticStripeRead),
+            "81" => Ok(POSEntryMode::EletronicCommerce),
+            "90" => Ok(POSEntryMode::AutoEntryMagneticStripe),
+            _ => Err(ISOMessageError::UnsupportedPEM),
         }
     }
 }
