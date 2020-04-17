@@ -1,6 +1,6 @@
 # Fluxo de autorização
 
-    Com intuito de aprender Rust resolvi reescrever um módulo do processo de autorização de transações de cartão de crédito por um Emissora de cartões.
+    Com intuito de aprender Rust resolvi reescrever um módulo do processo de autorização transações de cartão de crédito por um Emissora de cartões.
 
 # ISO 8583-1
 
