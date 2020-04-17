@@ -34,12 +34,12 @@ mod tests {
 
         let iso = iso.unwrap();
 
-        let transaction_kind = TransactionType::try_from(&iso);
+        let transaction_kind = TransactionType::try_from(iso);
 
         assert_eq!(transaction_kind.is_err(), true);
         assert_eq!(
             transaction_kind.unwrap_err(),
-            TransactionErrors::UnsupportedTransaction
+            ISOMessageError::UnsupportedTransaction
         );
     }
 
@@ -72,9 +72,8 @@ mod tests {
 
         let iso = iso.unwrap();
 
-        let transaction_kind = TransactionType::try_from(&iso);
+        let transaction_kind = TransactionType::try_from(iso);
 
         assert_eq!(transaction_kind.is_ok(), true);
-        assert_eq!(transaction_kind.unwrap(), TransactionType::OlinePurchase(&iso));
     }
 }
