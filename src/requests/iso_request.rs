@@ -4,9 +4,9 @@ use std::{collections::HashMap, convert::TryFrom};
 
 const REQUIRED_DE_0100: &str = "0|2|3|22";
 const REQUIRED_DE_0400: &str = "0|2";
-
+#[derive(Clone)]
 pub struct ISORequest {
-    fields: Vec<Field>,
+    pub fields: Vec<Field>,
 }
 
 impl ISORequest {
@@ -17,7 +17,7 @@ impl ISORequest {
 
 impl ISORequest {
     ///Gets value from DE
-    pub fn get_info(&self, id: String) -> Option<String> {
+    pub fn get_info(&self, id: &str) -> Option<String> {
         let item = self.fields.iter().find(|&field| field.id == id);
 
         match item {
@@ -27,7 +27,7 @@ impl ISORequest {
     }
 
     ///Gets value from DE
-    pub fn get_evaluated_info(&self, id: String) -> String {
+    pub fn get_evaluated_info(&self, id: &str) -> String {
         let value = self.get_info(id);
         value.unwrap_or_default()
     }
@@ -60,7 +60,7 @@ impl ISORequest {
     }
 
     pub fn get_mti(&self) -> Option<String> {
-        self.get_info("0".to_string())
+        self.get_info(MESSAGE_TYPE_INDICATOR)
     }
 }
 
@@ -74,7 +74,7 @@ impl TryFrom<&ISORequest> for ISOMessage {
 
         let mti = MessageTypeIndicator::try_from(request)?;
 
-        Ok(ISOMessage {
+        Ok(Self {
             mti,
             pcode: PCode::try_from(request)?,
             pem: POSEntryMode::try_from(request)?,
@@ -92,9 +92,9 @@ impl TryFrom<&ISORequest> for Card {
             return Err(ISOMessageError::RequiredDE);
         }
 
-        Ok(Card {
-            sequence: "0".to_string(),
-            number: request.get_evaluated_info("2".to_string()),
+        Ok(Self {
+            sequence: request.get_evaluated_info(CARD_SEQUENCE),
+            number: request.get_evaluated_info(CARD_NUMBER),
         })
     }
 }
@@ -107,8 +107,8 @@ impl TryFrom<&ISORequest> for Password {
             return Err(ISOMessageError::RequiredDE);
         }
 
-        Ok(Password {
-            value: request.get_evaluated_info("52".to_string()),
+        Ok(Self {
+            value: request.get_evaluated_info(CARD_PASSWORD),
         })
     }
 }
@@ -138,7 +138,7 @@ impl TryFrom<&ISORequest> for PCode {
             return Err(ISOMessageError::RequiredDE);
         }
 
-        let pcode = request.get_evaluated_info("3".to_string());
+        let pcode = request.get_evaluated_info(PCODE);
         let pcode = &pcode[0..2];
 
         match pcode {
@@ -160,10 +160,10 @@ impl TryFrom<&ISORequest> for POSEntryMode {
             return Err(ISOMessageError::RequiredDE);
         }
 
-        let pcode = request.get_evaluated_info("22".to_string());
-        let pcode = &pcode[0..2];
+        let pem = request.get_evaluated_info(PEM);
+        let pem = &pem[0..2];
 
-        match pcode {
+        match pem {
             "01" => Ok(POSEntryMode::Manual),
             "02" => Ok(POSEntryMode::MagneticStripe),
             "05" => Ok(POSEntryMode::Chip),

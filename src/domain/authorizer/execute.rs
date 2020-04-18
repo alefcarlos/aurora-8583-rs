@@ -12,7 +12,7 @@ pub enum AuthorizerResult {
     Authorization(String, u32),
 }
 
-pub fn execute_auth_flow(trx: TransactionType) -> Result<AuthorizerResult, AuthorizerError> {
+pub fn execute_auth_flow(trx: &TransactionType) -> Result<AuthorizerResult, AuthorizerError> {
     //TODO: persistir transacao no banco
 
     //TODO: emitir evento de transacao recebida

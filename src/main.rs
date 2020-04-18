@@ -9,7 +9,6 @@ fn main() {
     println!("Hello, world!");
 }
 
-
 // fn executar_regra_1(message: &ISOMessage) -> Result<ValidationResult, AuthorizerError> {
 //     Ok(ValidationResult::None)
 // }
@@ -34,6 +33,10 @@ mod tests {
         let fields = vec![
             Field {
                 id: "0".to_string(),
+                value: "0100".to_string(),
+            },
+            Field {
+                id: "1".to_string(),
                 value: "0100".to_string(),
             },
             Field {
@@ -68,8 +71,21 @@ mod tests {
         assert!(transaction != TransactionType::None, true);
 
         //Executar flow
-        let authorizer_result = execute_auth_flow(transaction);
+        let authorizer_result = execute_auth_flow(&transaction);
+
+        let result_param = ISOResponsePrepareParams {
+            request,
+            transaction,
+            authorizer_result,
+        };
 
         //Aplicar formatador de saída
+        let iso_response = ISOResponse::from(result_param);
+        let de_30 = iso_response.get_info("30");
+        
+        assert!(de_30.is_some(), true);
+
+        let de_1 = iso_response.get_info("1");
+        assert!(de_1.is_none(), true);
     }
 }

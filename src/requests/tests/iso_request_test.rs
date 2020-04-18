@@ -10,19 +10,19 @@ mod tests {
     fn test_request_should_has_valid_state() {
         let fields = vec![
             Field {
-                id: "0".to_string(),
+                id: MESSAGE_TYPE_INDICATOR.to_string(),
                 value: "0100".to_string(),
             },
             Field {
-                id: "2".to_string(),
+                id: CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
             Field {
-                id: "3".to_string(),
+                id: PCODE.to_string(),
                 value: "000000".to_string(),
             },
             Field {
-                id: "22".to_string(),
+                id: PEM.to_string(),
                 value: "051".to_string(),
             },
         ];
@@ -35,7 +35,7 @@ mod tests {
     #[test]
     fn test_request_should_has_invalid_state() {
         let fields = vec![Field {
-            id: "2".to_string(),
+            id: CARD_NUMBER.to_string(),
             value: "5276600404324025".to_string(),
         }];
 
@@ -48,11 +48,11 @@ mod tests {
     fn test_request_should_has_valid_mti() {
         let fields = vec![
             Field {
-                id: "0".to_string(),
+                id: MESSAGE_TYPE_INDICATOR.to_string(),
                 value: "0100".to_string(),
             },
             Field {
-                id: "2".to_string(),
+                id: CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
         ];
@@ -60,7 +60,7 @@ mod tests {
         let request = ISORequest::new(fields);
 
         assert_eq!(request.has_valid_mti(), true);
-        assert_eq!(request.get_info("0".to_string()), Some("0100".to_string()));
+        assert_eq!(request.get_info(MESSAGE_TYPE_INDICATOR), Some("0100".to_string()));
     }
 
     #[test]
@@ -71,7 +71,7 @@ mod tests {
                 value: "0100".to_string(),
             },
             Field {
-                id: "2".to_string(),
+                id: CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
         ];
@@ -79,26 +79,26 @@ mod tests {
         let request = ISORequest::new(fields);
 
         assert_eq!(request.has_valid_mti(), false);
-        assert_eq!(request.get_info("0".to_string()), None);
+        assert_eq!(request.get_info(MESSAGE_TYPE_INDICATOR), None);
     }
 
     #[test]
     fn test_parse_request_should_be_success() {
         let fields = vec![
             Field {
-                id: "0".to_string(),
+                id: MESSAGE_TYPE_INDICATOR.to_string(),
                 value: "0100".to_string(),
             },
             Field {
-                id: "2".to_string(),
+                id: CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
             Field {
-                id: "3".to_string(),
+                id: PCODE.to_string(),
                 value: "000000".to_string(),
             },
             Field {
-                id: "22".to_string(),
+                id: PEM.to_string(),
                 value: "051".to_string(),
             },
         ];
@@ -120,11 +120,11 @@ mod tests {
     fn test_parse_mti_0100_from_request_should_be_success() {
         let fields = vec![
             Field {
-                id: "0".to_string(),
+                id: MESSAGE_TYPE_INDICATOR.to_string(),
                 value: "0100".to_string(),
             },
             Field {
-                id: "2".to_string(),
+                id: CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
         ];
@@ -144,11 +144,11 @@ mod tests {
     fn test_parse_mti_0400_from_request_should_be_success() {
         let fields = vec![
             Field {
-                id: "0".to_string(),
+                id: MESSAGE_TYPE_INDICATOR.to_string(),
                 value: "0400".to_string(),
             },
             Field {
-                id: "2".to_string(),
+                id: CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
         ];
@@ -167,7 +167,7 @@ mod tests {
     #[test]
     fn test_required_de_0100_error_should_be_required_de() {
         let fields = vec![Field {
-            id: "0".to_string(),
+            id: MESSAGE_TYPE_INDICATOR.to_string(),
             value: "0100".to_string(),
         }];
 
@@ -182,7 +182,7 @@ mod tests {
     #[test]
     fn test_required_de_0400_error_should_be_required_de() {
         let fields = vec![Field {
-            id: "0".to_string(),
+            id: MESSAGE_TYPE_INDICATOR.to_string(),
             value: "0400".to_string(),
         }];
 
