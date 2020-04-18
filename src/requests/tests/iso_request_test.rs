@@ -124,8 +124,16 @@ mod tests {
                 value: "0100".to_string(),
             },
             Field {
+                id: PCODE.to_string(),
+                value: "000000".to_string(),
+            },
+            Field {
                 id: CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
+            },
+            Field {
+                id: PEM.to_string(),
+                value: "81".to_string(),
             },
         ];
 
@@ -148,8 +156,16 @@ mod tests {
                 value: "0400".to_string(),
             },
             Field {
+                id: PCODE.to_string(),
+                value: "000000".to_string(),
+            },
+            Field {
                 id: CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
+            },
+            Field {
+                id: PEM.to_string(),
+                value: "81".to_string(),
             },
         ];
 
