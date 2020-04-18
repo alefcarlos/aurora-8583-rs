@@ -1,5 +1,5 @@
-mod validate_cvc;
 mod models;
+mod card;
 
 pub use models::*;
-pub use validate_cvc::*;
+pub use card::*;
