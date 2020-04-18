@@ -1,6 +1,6 @@
 use super::Field;
 use std::{collections::HashMap, convert::TryFrom};
-use crate::domain::{REVERSAL_REQUEST, AUTHORIZATION_REQUEST, ISOMessageError, MESSAGE_TYPE_INDICATOR, MessageTypeIndicator, ISOMessage, PCode, POSEntryMode, Card, Password, CARD_SEQUENCE, CARD_NUMBER, CARD_PASSWORD, PCODE, PEM};
+use crate::domain::{REVERSAL_REQUEST, AUTHORIZATION_REQUEST, ISOMessageError, MESSAGE_TYPE_INDICATOR, MessageTypeIndicator, ISOMessage, PCode, POSEntryMode, Card, Password, CARD_SEQUENCE, CARD_NUMBER, CARD_PASSWORD, PCODE, PEM, CARD_EXPIRATION_DATE};
 
 const REQUIRED_DE_0100: &str = "0|2|3|22";
 const REQUIRED_DE_0400: &str = "0|2|3|22";
@@ -96,6 +96,7 @@ impl TryFrom<&ISORequest> for Card {
         Ok(Self {
             sequence: request.get_evaluated_info(CARD_SEQUENCE),
             number: request.get_evaluated_info(CARD_NUMBER),
+            expiration_date: request.get_evaluated_info(CARD_EXPIRATION_DATE)
         })
     }
 }

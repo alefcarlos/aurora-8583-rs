@@ -1,23 +1,21 @@
-// use crate::domain::TransactionType;
-// use super::online_purchase::execute_online_purchase;
+use crate::domain::TransactionType;
 
+pub fn execute(trx: &TransactionType) -> Result<super::Result, super::Error> {
+    //TODO: persistir transacao no banco
 
-// // pub fn execute_auth_flow(trx: &TransactionType) -> Result<self::Result, Error> {
-// //     //TODO: persistir transacao no banco
+    //TODO: emitir evento de transacao recebida
 
-// //     //TODO: emitir evento de transacao recebida
+    let result = match trx {
+        TransactionType::OlinePurchase(message) => super::online_purchase::execute(&message),
+        _ => Err(super::Error::InvalidTransaction)
+    };
 
-// //     let result = match trx {
-// //         TransactionType::OlinePurchase(message) => execute_online_purchase(&message),
-// //         _ => Err(Error::InvalidTransaction)
-// //     };
+    let response  = match result {
+        Ok(v) => Ok(v),
+        Err(v) => Err(v)
+    };
 
-// //     let response  = match result {
-// //         Ok(v) => Ok(v),
-// //         Err(v) => Err(v)
-// //     };
+    //TODO: emitir evento de transacao negada/aprovada
 
-// //     //TODO: emitir evento de transacao negada/aprovada
-
-// //     response
-// // }
+    response
+}

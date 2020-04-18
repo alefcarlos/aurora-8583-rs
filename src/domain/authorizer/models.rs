@@ -4,10 +4,14 @@ pub enum Error {
     CartaoInexistente,
     SenhaInvalida,
     InvalidCVC,
+    InvalidCardExpirationDate,
 }
 
-pub enum ValidationResult{
+pub struct ValidationSomeResult {}
+
+pub enum ValidationResult {
     Ok,
+    Some(ValidationSomeResult),
 }
 
 pub enum Result {

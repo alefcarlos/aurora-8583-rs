@@ -7,6 +7,9 @@ pub const CARD_NUMBER: &str = "2";
 /// DE 3
 pub const PCODE: &str = "3";
 
+/// DE 14
+pub const CARD_EXPIRATION_DATE: &str = "14";
+
 /// DE 22
 pub const PEM: &str = "22";
 

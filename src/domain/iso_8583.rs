@@ -65,6 +65,9 @@ pub struct Card {
 
     /// DE 23
     pub sequence: String,
+
+    // DE 14
+    pub expiration_date: String,
 }
 
 #[derive(Debug, PartialEq)]

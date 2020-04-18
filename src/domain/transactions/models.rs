@@ -12,7 +12,6 @@ pub enum TransactionType {
     None,
 }
 
-
 impl TryFrom<ISOMessage> for TransactionType {
     type Error = ISOMessageError;
 
