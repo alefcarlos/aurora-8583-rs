@@ -9,6 +9,7 @@ pub enum TransactionType {
     OlinePurchase(ISOMessage),
     PresentPurchase(ISOMessage),
     Withdraw(ISOMessage),
+    None,
 }
 
 impl TryFrom<ISOMessage> for TransactionType {
