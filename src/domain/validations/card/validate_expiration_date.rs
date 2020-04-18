@@ -1,7 +1,5 @@
 use crate::domain::{self, authorizer};
 
-use domain::ISOMessage;
-
 pub struct ValidateExpiration {
     request_date: String,
     card_date: String,
@@ -25,11 +23,3 @@ impl domain::validations::TryValidate<authorizer::ValidationResult, authorizer::
         Ok(authorizer::ValidationResult::Ok)
     }
 }
-
-// impl From<&ISOMessage> for ValidateCVC {
-//     fn from(_: &ISOMessage) -> Self {
-//         Self {
-//             cvc: "123".to_string(),
-//         }
-//     }
-// }
