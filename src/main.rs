@@ -1,5 +1,6 @@
 mod domain;
 mod requests;
+mod authorization_iso_8583;
 
 fn main() {
     println!("Hello, world!");
