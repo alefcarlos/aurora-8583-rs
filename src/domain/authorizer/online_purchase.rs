@@ -16,3 +16,14 @@
 
 //     validate_card_expiration_date(message)
 // }
+use crate::domain::{TransactionType, TryExecute};
+
+impl TryExecute<super::Result, super::Error>
+    for TransactionType
+{
+    fn execute(
+        &self,
+    ) -> Result<super::Result, super::Error> {
+        todo!()
+    }
+}

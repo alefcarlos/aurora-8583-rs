@@ -6,6 +6,9 @@ pub struct ValidateCVC {
 
 impl domain::TryExecute<authorizer::ValidationResult, authorizer::Error> for ValidateCVC {
     fn execute(&self) -> Result<authorizer::ValidationResult, authorizer::Error> {
-        Ok(authorizer::ValidationResult::Ok)
+        match self.cvc.as_str() {
+            "123" => Ok(authorizer::ValidationResult::Ok),
+            _ => Err(authorizer::Error::InvalidCVC),
+        }
     }
 }

@@ -3,6 +3,7 @@ pub enum Error {
     SaldoInsuficiente,
     CartaoInexistente,
     SenhaInvalida,
+    InvalidCVC,
 }
 
 pub enum ValidationResult{
