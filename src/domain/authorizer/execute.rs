@@ -1,5 +1,5 @@
 use crate::domain::TransactionType;
-use super::online_purchase::process_online;
+use super::online_purchase::{execute_online_purchase};
 
 pub enum AuthorizerError {
     InvalidTransaction,
@@ -14,7 +14,7 @@ pub enum AuthorizerResult {
 
 pub fn execute_auth_flow(trx: TransactionType) -> Result<AuthorizerResult, AuthorizerError> {
     let result = match trx {
-        TransactionType::OlinePurchase(message) => process_online(&message),
+        TransactionType::OlinePurchase(message) => execute_online_purchase(&message),
         _ => Err(AuthorizerError::InvalidTransaction)
     };
 
