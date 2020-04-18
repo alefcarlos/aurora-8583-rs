@@ -43,8 +43,8 @@ impl ISORequest {
         let mti = self.get_mti().unwrap();
 
         let mut required_de = HashMap::new();
-        required_de.insert("0100", REQUIRED_DE_0100);
-        required_de.insert("0400", REQUIRED_DE_0400);
+        required_de.insert(AUTHORIZATION_REQUEST, REQUIRED_DE_0100);
+        required_de.insert(REVERSAL_REQUEST, REQUIRED_DE_0400);
 
         let required = required_de[mti.as_str()];
 

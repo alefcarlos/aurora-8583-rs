@@ -6,3 +6,5 @@ pub  const CARD_SEQUENCE: &str = "23";
 pub const CARD_PASSWORD: &str = "54";
 pub const RESPONSE_CODE: &str = "30";
 
+pub const AUTHORIZATION_REQUEST:&str = "0100";
+pub const REVERSAL_REQUEST:&str = "0400";
