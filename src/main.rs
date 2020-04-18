@@ -1,25 +1,9 @@
 mod domain;
 mod requests;
 
-use domain::{ISOMessage, TransactionType};
-use requests::*;
-use std::convert::TryFrom;
-
 fn main() {
     println!("Hello, world!");
 }
-
-// fn executar_regra_1(message: &ISOMessage) -> Result<ValidationResult, AuthorizerError> {
-//     Ok(ValidationResult::None)
-// }
-
-// fn executar_regra_2(message: &ISOMessage) -> Result<ValidationResult, AuthorizerError> {
-//     Err(AuthorizerError::SaldoInsuficiente)
-// }
-
-// fn executar_regra_3(message: &ISOMessage) -> Result<ValidationResult, AuthorizerError> {
-//     Ok(ValidationResult::None)
-// }
 
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
@@ -67,21 +51,21 @@ mod tests {
         assert!(transaction != TransactionType::None, true);
 
         //Executar flow
-        let authorizer_result = execute_auth_flow(&transaction);
+        // let authorizer_result = execute_auth_flow(&transaction);
 
-        let result_param = ISOResponsePrepareParams {
-            request,
-            transaction,
-            authorizer_result,
-        };
+        // let result_param = ISOResponsePrepareParams {
+        //     request,
+        //     transaction,
+        //     authorizer_result,
+        // };
 
-        //Aplicar formatador de saída
-        let iso_response = ISOResponse::from(result_param);
-        let de_30 = iso_response.get_info("30");
+        // //Aplicar formatador de saída
+        // let iso_response = ISOResponse::from(result_param);
+        // let de_30 = iso_response.get_info("30");
         
-        assert!(de_30.is_some(), true);
+        // assert!(de_30.is_some(), true);
 
-        let de_1 = iso_response.get_info("1");
-        assert!(de_1.is_none(), true);
+        // let de_1 = iso_response.get_info("1");
+        // assert!(de_1.is_none(), true);
     }
 }

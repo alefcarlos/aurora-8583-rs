@@ -1,10 +1,10 @@
 use super::{Field, ISORequest};
-use crate::domain::{AuthorizerError, AuthorizerResult, TransactionType, MESSAGE_TYPE_INDICATOR, RESPONSE_CODE};
+use crate::domain::{MESSAGE_TYPE_INDICATOR, RESPONSE_CODE, TransactionType, self};
 
 pub struct ISOResponsePrepareParams {
     pub request: ISORequest,
     pub transaction: TransactionType,
-    pub authorizer_result: Result<AuthorizerResult, AuthorizerError>,
+    pub authorizer_result: Result<domain::authorizer::Result, domain::authorizer::Error>,
 }
 
 pub struct ISOResponse {

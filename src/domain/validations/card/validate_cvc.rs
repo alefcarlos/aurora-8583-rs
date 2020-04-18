@@ -1,5 +1,11 @@
-use crate::domain::{ISOMessage, AuthorizerError, validations::ValidationResult};
+use crate::domain::{self, authorizer};
 
-pub fn validate_card_cvc(message: &ISOMessage) -> Result<ValidationResult, AuthorizerError> {
-    Ok(ValidationResult::None)
+pub struct ValidateCVC {
+    cvc: String,
+}
+
+impl domain::TryExecute<authorizer::ValidationResult, authorizer::Error> for ValidateCVC {
+    fn execute(&self) -> Result<authorizer::ValidationResult, authorizer::Error> {
+        Ok(authorizer::ValidationResult::Ok)
+    }
 }
