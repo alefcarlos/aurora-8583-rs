@@ -3,7 +3,7 @@ use crate::domain::*;
 use std::{collections::HashMap, convert::TryFrom};
 
 const REQUIRED_DE_0100: &str = "0|2|3|22";
-const REQUIRED_DE_0400: &str = "0|2";
+const REQUIRED_DE_0400: &str = "0|2|3|22";
 #[derive(Clone)]
 pub struct ISORequest {
     pub fields: Vec<Field>,

@@ -32,23 +32,19 @@ mod tests {
     fn test_flow() {
         let fields = vec![
             Field {
-                id: "0".to_string(),
-                value: "0100".to_string(),
+                id: MESSAGE_TYPE_INDICATOR.to_string(),
+                value: AUTHORIZATION_REQUEST.to_string(),
             },
             Field {
-                id: "1".to_string(),
-                value: "0100".to_string(),
-            },
-            Field {
-                id: "2".to_string(),
+                id: CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
             Field {
-                id: "3".to_string(),
+                id: PCODE.to_string(),
                 value: "000000".to_string(),
             },
             Field {
-                id: "22".to_string(),
+                id: PEM.to_string(),
                 value: "81".to_string(),
             },
         ];
