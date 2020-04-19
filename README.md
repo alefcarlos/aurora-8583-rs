@@ -1,7 +1,26 @@
 # Fluxo de autorização
 
-    Com intuito de aprender Rust resolvi reescrever um módulo do processo de autorização transações de cartão de crédito por um Emissora de cartões.
+    Com intuito de aprender Rust resolvi reescrever um módulo do processo de autorização transações de cartão de crédito feito por uma Emissora de cartões.
+
+> Será simulado algumas transações `Mastercard` recebida pelo `jPOS`.
+> [jPOS](http://www.jpos.org/) handles ISO8583 standard
 
 # ISO 8583-1
 
-Aqui iremos modelar uma ISO8583-1 aplicando algumas regras de valições dependendo do tipo da mensagem.
+Iremos modelar uma ISO8583-1 aplicando algumas regras de valições dependendo do tipo de transação.
+
+# Validações
+
+Para criar uma nova validação é necessário implementar a trait `TryValidate`.
+
+
+```rust
+pub trait TryValidate<T, E> {
+    fn try_validate(&self) -> Result<T, E>;
+}
+```
+
+Validações de exemplo:
+
+- Validar data de expiração
+- Validar CVC
