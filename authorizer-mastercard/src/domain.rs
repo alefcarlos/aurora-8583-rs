@@ -1,5 +1,5 @@
 mod transactions;
 pub mod authorizer;
-mod validations;
+pub mod validations;
 
 pub use transactions::*;

@@ -1,12 +1,14 @@
-use crate::domain::TransactionType;
 
-pub fn execute(trx: &TransactionType) -> Result<super::Result, super::Error> {
+use crate::domain::Transactions;
+use aurora_8583::TryAuthorizerTransaction;
+
+pub fn execute(trx: &Transactions) -> Result<super::Result, super::Error> {
     //TODO: persistir transacao no banco
 
     //TODO: emitir evento de transacao recebida
 
     let result = match trx {
-        TransactionType::OlinePurchase(message) => super::online_purchase::execute(&message),
+        Transactions::OnlinePurchase(message) => message.try_authorize(),
         _ => Err(super::Error::InvalidTransaction)
     };
 

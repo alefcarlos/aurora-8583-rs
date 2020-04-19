@@ -5,5 +5,7 @@
 
 mod validations;
 pub mod iso8583;
+mod authorizer;
 
 pub use validations::*;
+pub use authorizer::*;

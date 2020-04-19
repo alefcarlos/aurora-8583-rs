@@ -4,6 +4,7 @@ use authorizer_mastercard::domain;
 use std::error;
 use std::convert::TryFrom;
 
+
 mod tests {
     use super::*;
     
@@ -38,15 +39,13 @@ mod tests {
         //ApiHandle
 
         //Aplicar formatador de entrada
-        let transaction = domain::TransactionType::try_from(&request)?;
+        let transaction = domain::Transactions::try_from(&request)?;
 
         //Se TransactionType::None retornar 400 - Bad Request
-        assert!(transaction != domain::TransactionType::None, "Transaction type must be different from TransactionType::None");
-
+        assert!(transaction != domain::Transactions::None, "Transaction type must be different from TransactionType::None");
+        
         //Executar flow
         let authorizer_result = domain::authorizer::execute(&transaction);
-        
-        assert!(!authorizer_result.is_err(), "authorizer_result must no be Err");
 
         let result_param = requests::ISOResponsePrepareParams {
             request,

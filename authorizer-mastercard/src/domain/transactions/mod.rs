@@ -1,16 +1,18 @@
 use crate::requests;
-use std::convert::TryFrom;
 use aurora_8583::iso8583;
 
+use std::convert::TryFrom;
+
 #[derive(PartialEq, Debug)]
-pub enum TransactionType {
-    OlinePurchase(iso8583::ISOMessage),
-    PresentPurchase(iso8583::ISOMessage),
-    Withdraw(iso8583::ISOMessage),
+pub enum Transactions {
+    OnlinePurchase(OnlinePurchaseTransaction),
     None,
 }
 
-impl TryFrom<iso8583::ISOMessage> for TransactionType {
+#[derive(PartialEq, Debug)]
+pub struct OnlinePurchaseTransaction(pub iso8583::ISOMessage);
+
+impl TryFrom<iso8583::ISOMessage> for Transactions {
     type Error = iso8583::ISOMessageError;
 
     fn try_from(request: iso8583::ISOMessage) -> Result<Self, Self::Error> {
@@ -20,13 +22,15 @@ impl TryFrom<iso8583::ISOMessage> for TransactionType {
                 pem: iso8583::POSEntryMode::EletronicCommerce,
                 pcode: iso8583::PCode::Purchase,
                 ..
-            } => Ok(TransactionType::OlinePurchase(request)),
+            } => Ok(Transactions::OnlinePurchase(OnlinePurchaseTransaction(
+                request,
+            ))),
             _ => Err(iso8583::ISOMessageError::UnsupportedTransaction),
         }
     }
 }
 
-impl TryFrom<&requests::ISORequest> for TransactionType {
+impl TryFrom<&requests::ISORequest> for Transactions {
     type Error = iso8583::ISOMessageError;
 
     fn try_from(value: &requests::ISORequest) -> Result<Self, Self::Error> {
@@ -34,7 +38,7 @@ impl TryFrom<&requests::ISORequest> for TransactionType {
 
         //TODO: Validar DE requeridos de acordo com TransactionType
 
-        TransactionType::try_from(iso)
+        Transactions::try_from(iso)
     }
 }
 
@@ -72,7 +76,7 @@ mod tests {
 
         let iso = iso.unwrap();
 
-        let transaction_kind = TransactionType::try_from(iso);
+        let transaction_kind = Transactions::try_from(iso);
 
         assert!(transaction_kind.is_err());
 
@@ -111,7 +115,7 @@ mod tests {
 
         let iso = iso.unwrap();
 
-        let transaction_kind = TransactionType::try_from(iso);
+        let transaction_kind = Transactions::try_from(iso);
 
         assert!(transaction_kind.is_ok());
     }
