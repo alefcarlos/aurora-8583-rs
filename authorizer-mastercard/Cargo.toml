@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 
-authorization-iso8583 = { path = "../authorization-iso8583" }
+aurora-8583 = { path = "../aurora-8583" }

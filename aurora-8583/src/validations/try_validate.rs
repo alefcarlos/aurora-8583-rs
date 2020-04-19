@@ -4,7 +4,7 @@
 /// `TryValidate<T>` can be implemented as follows:
 /// 
 /// ```
-/// use authorization_iso8583::TryValidate;
+/// use aurora_8583::TryValidate;
 /// 
 /// struct GreaterThanZero(i32);
 /// 

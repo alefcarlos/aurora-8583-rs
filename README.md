@@ -5,11 +5,14 @@
 > Será simulado algumas transações `Mastercard` recebida pelo `jPOS`.
 > [jPOS](http://www.jpos.org/) handles ISO8583 standard
 
-# ISO 8583-1
+## ISO8583
 
-Iremos modelar uma ISO8583-1 aplicando algumas regras de valições dependendo do tipo de transação.
+Iremos modelar uma ISO8583 aplicando algumas regras de valições dependendo do tipo de transação.
 
-# Validações
+## Tipos de transações
+
+
+## Validações
 
 Para criar uma nova validação é necessário implementar a trait `TryValidate`.
 

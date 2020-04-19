@@ -1,4 +1,4 @@
-//! # My Crate
+//! # authorization-iso8583
 //!
 //! `authorization_iso8583` is a collection of utilities to constuct
 //! an authorization flow

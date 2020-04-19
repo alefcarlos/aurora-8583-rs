@@ -13,7 +13,7 @@ impl ValidateExpiration {
     }
 }
 
-impl authorization_iso8583::TryValidate<authorizer::ValidationResult> for ValidateExpiration {
+impl aurora_8583::TryValidate<authorizer::ValidationResult> for ValidateExpiration {
     type Error = authorizer::Error;
 
     fn try_validate(&self) -> Result<authorizer::ValidationResult, Self::Error> {

@@ -1,6 +1,6 @@
 use crate::requests;
 use std::convert::TryFrom;
-use authorization_iso8583::iso8583;
+use aurora_8583::iso8583;
 
 #[derive(PartialEq, Debug)]
 pub enum TransactionType {

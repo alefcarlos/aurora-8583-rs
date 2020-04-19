@@ -1,4 +1,4 @@
-use authorization_iso8583::iso8583;
+use aurora_8583::iso8583;
 use authorizer_mastercard::requests;
 use authorizer_mastercard::domain;
 use std::error;

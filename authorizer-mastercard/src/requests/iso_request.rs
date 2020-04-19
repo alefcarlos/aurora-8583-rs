@@ -1,6 +1,6 @@
 use super::Field;
 use std::{collections::HashMap, convert::TryFrom};
-use authorization_iso8583::iso8583;
+use aurora_8583::iso8583;
 
 const REQUIRED_DE_0100: &str = "0|2|3|22";
 const REQUIRED_DE_0400: &str = "0|2|3|22";

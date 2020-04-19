@@ -1,11 +1,11 @@
 use crate::domain::authorizer;
-use authorization_iso8583::iso8583;
+use aurora_8583::iso8583;
 
 pub struct ValidateCVC {
     cvc: String,
 }
 
-impl authorization_iso8583::TryValidate<authorizer::ValidationResult> for ValidateCVC {
+impl aurora_8583::TryValidate<authorizer::ValidationResult> for ValidateCVC {
     type Error = authorizer::Error;
     
     fn try_validate(&self) -> Result<authorizer::ValidationResult, Self::Error> {

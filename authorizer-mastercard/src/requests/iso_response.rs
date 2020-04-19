@@ -1,6 +1,6 @@
 use super::{Field, ISORequest};
 use crate::domain;
-use authorization_iso8583::iso8583;
+use aurora_8583::iso8583;
 
 pub struct ISOResponsePrepareParams {
     pub request: ISORequest,

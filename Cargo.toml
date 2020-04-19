@@ -2,5 +2,5 @@
 
 members = [
     "authorizer-mastercard",
-    "authorization-iso8583"
+    "aurora-8583",
 ]

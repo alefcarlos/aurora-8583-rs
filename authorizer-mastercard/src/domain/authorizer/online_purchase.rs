@@ -1,6 +1,6 @@
 use crate::domain::validations;
-use authorization_iso8583::iso8583;
-use authorization_iso8583::TryValidate;
+use aurora_8583::iso8583;
+use aurora_8583::TryValidate;
 
 pub fn execute(message: &iso8583::ISOMessage) -> Result<super::Result, super::Error> {
     validations::card::ValidateCVC::from(message).try_validate()?;
