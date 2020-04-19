@@ -209,7 +209,7 @@ mod tests {
 
         let request = ISORequest::new(fields);
 
-        assert_eq!(request.is_valid(), true);
+        assert!(request.is_valid());
     }
 
     #[test]
@@ -221,7 +221,7 @@ mod tests {
 
         let request = ISORequest::new(fields);
 
-        assert_eq!(request.is_valid(), false);
+        assert!(!request.is_valid());
     }
 
     #[test]
@@ -239,7 +239,7 @@ mod tests {
 
         let request = ISORequest::new(fields);
 
-        assert_eq!(request.has_valid_mti(), true);
+        assert!(request.has_valid_mti());
         assert_eq!(
             request.get_info(iso_8583::constants::MESSAGE_TYPE_INDICATOR),
             Some("0100".to_string())
@@ -261,7 +261,7 @@ mod tests {
 
         let request = ISORequest::new(fields);
 
-        assert_eq!(request.has_valid_mti(), false);
+        assert!(!request.has_valid_mti());
         assert_eq!(
             request.get_info(iso_8583::constants::MESSAGE_TYPE_INDICATOR),
             None
@@ -327,7 +327,7 @@ mod tests {
 
         let request = ISORequest::new(fields);
 
-        assert_eq!(request.is_valid(), true);
+        assert!(request.is_valid());
 
         let iso = iso_8583::ISOMessage::try_from(&request)?;
 
@@ -362,7 +362,7 @@ mod tests {
 
         let request = ISORequest::new(fields);
 
-        assert_eq!(request.is_valid(), true);
+        assert!(request.is_valid());
 
         let iso = iso_8583::ISOMessage::try_from(&request)?;
 
@@ -382,7 +382,7 @@ mod tests {
 
         let iso = iso_8583::ISOMessage::try_from(&request);
 
-        assert_eq!(iso.is_err(), true);
+        assert!(iso.is_err());
         assert_eq!(iso.unwrap_err(), iso_8583::ISOMessageError::RequiredDE);
     }
 
@@ -397,7 +397,7 @@ mod tests {
 
         let iso = iso_8583::ISOMessage::try_from(&request);
 
-        assert_eq!(iso.is_err(), true);
+        assert!(iso.is_err());
         assert_eq!(iso.unwrap_err(), iso_8583::ISOMessageError::RequiredDE);
     }
 }

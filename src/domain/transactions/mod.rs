@@ -64,16 +64,17 @@ mod tests {
         ];
 
         let request = requests::ISORequest::new(fields);
-        assert_eq!(request.is_valid(), true);
+        assert!(request.is_valid());
 
         let iso = iso_8583::ISOMessage::try_from(&request);
-        assert_eq!(iso.is_ok(), true);
+        assert!(iso.is_ok());
 
         let iso = iso.unwrap();
 
         let transaction_kind = TransactionType::try_from(iso);
 
-        assert_eq!(transaction_kind.is_err(), true);
+        assert!(transaction_kind.is_err());
+
         assert_eq!(
             transaction_kind.unwrap_err(),
             iso_8583::ISOMessageError::UnsupportedTransaction
@@ -102,15 +103,15 @@ mod tests {
         ];
 
         let request = requests::ISORequest::new(fields);
-        assert_eq!(request.is_valid(), true);
+        assert!(request.is_valid());
 
         let iso = iso_8583::ISOMessage::try_from(&request);
-        assert_eq!(iso.is_ok(), true);
+        assert!(iso.is_ok());
 
         let iso = iso.unwrap();
 
         let transaction_kind = TransactionType::try_from(iso);
 
-        assert_eq!(transaction_kind.is_ok(), true);
+        assert!(transaction_kind.is_ok());
     }
 }
