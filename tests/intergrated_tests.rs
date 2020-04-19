@@ -55,9 +55,13 @@ mod tests {
 
         //Aplicar formatador de saída
         let iso_response = requests::ISOResponse::from(result_param);
-        let de_30 = iso_response.get_info("30");
+        let de_0 = iso_response.get_info(iso_8583::constants::MESSAGE_TYPE_INDICATOR).unwrap();
 
-        assert!(de_30.is_some(), "de_30 must have value");
+        assert_eq!(de_0, "0110", "de 0 should be 0110, but is {}", de_0);
+
+        let de_30 = iso_response.get_info("30").unwrap();
+
+        assert_eq!(de_30, "00", "de 30 should be 00");
 
         // let de_1 = iso_response.get_info("1");
         // assert!(de_1.is_none(), );

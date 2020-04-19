@@ -1,5 +1,8 @@
 use super::{Field, ISORequest};
-use crate::{authorization_iso_8583::iso_8583, domain::{self}};
+use crate::{
+    authorization_iso_8583::iso_8583,
+    domain,
+};
 
 pub struct ISOResponsePrepareParams {
     pub request: ISORequest,
@@ -18,6 +21,10 @@ impl ISOResponse {
 
     fn add_field(&mut self, value: Field) {
         self.fields.push(value);
+    }
+
+    fn add_value_field(&mut self, id: String, value: String) {
+        self.add_field(Field { id, value });
     }
 
     fn rm_field(&mut self, id: &str) {
@@ -48,19 +55,19 @@ impl From<ISOResponsePrepareParams> for ISOResponse {
         response.rm_field(iso_8583::constants::MESSAGE_TYPE_INDICATOR);
 
         //TODO: remover DE de acordo com a transaction
-        // match value.transaction {
-        //     TransactionType::OlinePurchase(_) => {
-        //         response.rm_field("1");
-        //         response.rm_field("55");
-        //     },
-        //     _ => (),
-        // }
+        match value.transaction {
+            domain::TransactionType::OlinePurchase(_) => {
+                response.add_value_field(iso_8583::constants::MESSAGE_TYPE_INDICATOR.to_owned(), "0110".to_owned());
+            }
+            _ => (),
+        }
 
         //TODO: aplicar novos DE
-        response.add_field(Field {
-            id: iso_8583::constants::RESPONSE_CODE.to_owned(),
-            value: "00".to_owned(),
-        });
+
+        response.add_value_field(
+            iso_8583::constants::RESPONSE_CODE.to_owned(),
+            "00".to_owned(),
+        );
 
         response
     }
@@ -80,4 +87,3 @@ impl From<ISORequest> for ISOResponse {
         this
     }
 }
-
