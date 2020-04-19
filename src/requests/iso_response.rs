@@ -1,9 +1,9 @@
 use super::{Field, ISORequest};
-use crate::domain::{MESSAGE_TYPE_INDICATOR, RESPONSE_CODE, TransactionType, self};
+use crate::{authorization_iso_8583::iso_8583, domain::{self}};
 
 pub struct ISOResponsePrepareParams {
     pub request: ISORequest,
-    pub transaction: TransactionType,
+    pub transaction: domain::TransactionType,
     pub authorizer_result: Result<domain::authorizer::Result, domain::authorizer::Error>,
 }
 
@@ -45,7 +45,7 @@ impl From<ISOResponsePrepareParams> for ISOResponse {
         let mut response = Self::from(value.request);
 
         // Delete default DE
-        response.rm_field(MESSAGE_TYPE_INDICATOR);
+        response.rm_field(iso_8583::constants::MESSAGE_TYPE_INDICATOR);
 
         //TODO: remover DE de acordo com a transaction
         // match value.transaction {
@@ -58,7 +58,7 @@ impl From<ISOResponsePrepareParams> for ISOResponse {
 
         //TODO: aplicar novos DE
         response.add_field(Field {
-            id: RESPONSE_CODE.to_owned(),
+            id: iso_8583::constants::RESPONSE_CODE.to_owned(),
             value: "00".to_owned(),
         });
 
