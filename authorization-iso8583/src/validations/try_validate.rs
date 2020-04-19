@@ -4,7 +4,7 @@
 /// `TryValidate<T>` can be implemented as follows:
 /// 
 /// ```
-/// use authflow::authorization_iso_8583::TryValidate;
+/// use authorization_iso8583::TryValidate;
 /// 
 /// struct GreaterThanZero(i32);
 /// 
