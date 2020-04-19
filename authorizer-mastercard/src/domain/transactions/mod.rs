@@ -1,35 +1,36 @@
-use crate::{requests, authorization_iso_8583::iso_8583};
+use crate::requests;
 use std::convert::TryFrom;
+use authorization_iso8583::iso8583;
 
 #[derive(PartialEq, Debug)]
 pub enum TransactionType {
-    OlinePurchase(iso_8583::ISOMessage),
-    PresentPurchase(iso_8583::ISOMessage),
-    Withdraw(iso_8583::ISOMessage),
+    OlinePurchase(iso8583::ISOMessage),
+    PresentPurchase(iso8583::ISOMessage),
+    Withdraw(iso8583::ISOMessage),
     None,
 }
 
-impl TryFrom<iso_8583::ISOMessage> for TransactionType {
-    type Error = iso_8583::ISOMessageError;
+impl TryFrom<iso8583::ISOMessage> for TransactionType {
+    type Error = iso8583::ISOMessageError;
 
-    fn try_from(request: iso_8583::ISOMessage) -> Result<Self, Self::Error> {
+    fn try_from(request: iso8583::ISOMessage) -> Result<Self, Self::Error> {
         match request {
-            iso_8583::ISOMessage {
-                mti: iso_8583::MessageTypeIndicator::AuthorizationRequest,
-                pem: iso_8583::POSEntryMode::EletronicCommerce,
-                pcode: iso_8583::PCode::Purchase,
+            iso8583::ISOMessage {
+                mti: iso8583::MessageTypeIndicator::AuthorizationRequest,
+                pem: iso8583::POSEntryMode::EletronicCommerce,
+                pcode: iso8583::PCode::Purchase,
                 ..
             } => Ok(TransactionType::OlinePurchase(request)),
-            _ => Err(iso_8583::ISOMessageError::UnsupportedTransaction),
+            _ => Err(iso8583::ISOMessageError::UnsupportedTransaction),
         }
     }
 }
 
 impl TryFrom<&requests::ISORequest> for TransactionType {
-    type Error = iso_8583::ISOMessageError;
+    type Error = iso8583::ISOMessageError;
 
     fn try_from(value: &requests::ISORequest) -> Result<Self, Self::Error> {
-        let iso = iso_8583::ISOMessage::try_from(value)?;
+        let iso = iso8583::ISOMessage::try_from(value)?;
 
         //TODO: Validar DE requeridos de acordo com TransactionType
 
@@ -66,7 +67,7 @@ mod tests {
         let request = requests::ISORequest::new(fields);
         assert!(request.is_valid());
 
-        let iso = iso_8583::ISOMessage::try_from(&request);
+        let iso = iso8583::ISOMessage::try_from(&request);
         assert!(iso.is_ok());
 
         let iso = iso.unwrap();
@@ -77,7 +78,7 @@ mod tests {
 
         assert_eq!(
             transaction_kind.unwrap_err(),
-            iso_8583::ISOMessageError::UnsupportedTransaction
+            iso8583::ISOMessageError::UnsupportedTransaction
         );
     }
 
@@ -105,7 +106,7 @@ mod tests {
         let request = requests::ISORequest::new(fields);
         assert!(request.is_valid());
 
-        let iso = iso_8583::ISOMessage::try_from(&request);
+        let iso = iso8583::ISOMessage::try_from(&request);
         assert!(iso.is_ok());
 
         let iso = iso.unwrap();

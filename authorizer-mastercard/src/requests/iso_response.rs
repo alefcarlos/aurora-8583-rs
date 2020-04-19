@@ -1,8 +1,6 @@
 use super::{Field, ISORequest};
-use crate::{
-    authorization_iso_8583::iso_8583,
-    domain,
-};
+use crate::domain;
+use authorization_iso8583::iso8583;
 
 pub struct ISOResponsePrepareParams {
     pub request: ISORequest,
@@ -52,12 +50,12 @@ impl From<ISOResponsePrepareParams> for ISOResponse {
         let mut response = Self::from(value.request);
 
         // Delete default DE
-        response.rm_field(iso_8583::constants::MESSAGE_TYPE_INDICATOR);
+        response.rm_field(iso8583::constants::MESSAGE_TYPE_INDICATOR);
 
         //TODO: remover DE de acordo com a transaction
         match value.transaction {
             domain::TransactionType::OlinePurchase(_) => {
-                response.add_value_field(iso_8583::constants::MESSAGE_TYPE_INDICATOR.to_owned(), "0110".to_owned());
+                response.add_value_field(iso8583::constants::MESSAGE_TYPE_INDICATOR.to_owned(), "0110".to_owned());
             }
             _ => (),
         }
@@ -65,7 +63,7 @@ impl From<ISOResponsePrepareParams> for ISOResponse {
         //TODO: aplicar novos DE
 
         response.add_value_field(
-            iso_8583::constants::RESPONSE_CODE.to_owned(),
+            iso8583::constants::RESPONSE_CODE.to_owned(),
             "00".to_owned(),
         );
 

@@ -1,32 +1,33 @@
-use authflow::authorization_iso_8583::iso_8583;
-use authflow::requests;
-use authflow::domain;
+use authorization_iso8583::iso8583;
+use authorizer_mastercard::requests;
+use authorizer_mastercard::domain;
+use std::error;
+use std::convert::TryFrom;
 
 mod tests {
     use super::*;
-    use std::{error, convert::TryFrom};
     
     #[test]
     fn test_should_ok_when_request_is_valid() -> Result<(), Box<dyn error::Error>>  {
         let fields = vec![
             requests::Field {
-                id: iso_8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
-                value: iso_8583::constants::AUTHORIZATION_REQUEST.to_string(),
+                id: iso8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
+                value: iso8583::constants::AUTHORIZATION_REQUEST.to_string(),
             },
             requests::Field {
-                id: iso_8583::constants::CARD_NUMBER.to_string(),
+                id: iso8583::constants::CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
             requests::Field {
-                id: iso_8583::constants::PCODE.to_string(),
+                id: iso8583::constants::PCODE.to_string(),
                 value: "000000".to_string(),
             },
             requests::Field {
-                id: iso_8583::constants::CARD_EXPIRATION_DATE.to_string(),
+                id: iso8583::constants::CARD_EXPIRATION_DATE.to_string(),
                 value: "2416".to_string(),
             },
             requests::Field {
-                id: iso_8583::constants::PEM.to_string(),
+                id: iso8583::constants::PEM.to_string(),
                 value: "81".to_string(),
             },
         ];
@@ -55,7 +56,7 @@ mod tests {
 
         //Aplicar formatador de saída
         let iso_response = requests::ISOResponse::from(result_param);
-        let de_0 = iso_response.get_info(iso_8583::constants::MESSAGE_TYPE_INDICATOR).unwrap();
+        let de_0 = iso_response.get_info(iso8583::constants::MESSAGE_TYPE_INDICATOR).unwrap();
 
         assert_eq!(de_0, "0110", "de 0 should be 0110, but is {}", de_0);
 

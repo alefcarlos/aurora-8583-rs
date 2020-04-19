@@ -19,7 +19,7 @@ pub const CARD_SEQUENCE: &str = "23";
 // DE 54
 pub const CARD_PASSWORD: &str = "54";
 
-// DE 30
+/// DE 30
 pub const RESPONSE_CODE: &str = "30";
 
 /// 0100

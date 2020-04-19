@@ -1,5 +1,4 @@
-use crate::{domain::authorizer, authorization_iso_8583};
-
+use crate::domain::authorizer;
 pub struct ValidateExpiration {
     request_date: String,
     card_date: String,
@@ -14,8 +13,10 @@ impl ValidateExpiration {
     }
 }
 
-impl authorization_iso_8583::TryValidate<authorizer::ValidationResult, authorizer::Error> for ValidateExpiration {
-    fn try_validate(&self) -> Result<authorizer::ValidationResult, authorizer::Error> {
+impl authorization_iso8583::TryValidate<authorizer::ValidationResult> for ValidateExpiration {
+    type Error = authorizer::Error;
+
+    fn try_validate(&self) -> Result<authorizer::ValidationResult, Self::Error> {
         if self.request_date != self.card_date {
             return Err(authorizer::Error::InvalidCardExpirationDate);
         }

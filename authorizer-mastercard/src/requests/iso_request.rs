@@ -1,6 +1,6 @@
 use super::Field;
-use crate::authorization_iso_8583::iso_8583;
 use std::{collections::HashMap, convert::TryFrom};
+use authorization_iso8583::iso8583;
 
 const REQUIRED_DE_0100: &str = "0|2|3|22";
 const REQUIRED_DE_0400: &str = "0|2|3|22";
@@ -44,8 +44,8 @@ impl ISORequest {
         let mti = self.get_mti().unwrap();
 
         let mut required_de = HashMap::new();
-        required_de.insert(iso_8583::constants::AUTHORIZATION_REQUEST, REQUIRED_DE_0100);
-        required_de.insert(iso_8583::constants::REVERSAL_REQUEST, REQUIRED_DE_0400);
+        required_de.insert(iso8583::constants::AUTHORIZATION_REQUEST, REQUIRED_DE_0100);
+        required_de.insert(iso8583::constants::REVERSAL_REQUEST, REQUIRED_DE_0400);
 
         let required = required_de[mti.as_str()];
 
@@ -61,121 +61,121 @@ impl ISORequest {
     }
 
     pub fn get_mti(&self) -> Option<String> {
-        self.get_info(iso_8583::constants::MESSAGE_TYPE_INDICATOR)
+        self.get_info(iso8583::constants::MESSAGE_TYPE_INDICATOR)
     }
 }
 
-impl TryFrom<&ISORequest> for iso_8583::ISOMessage {
-    type Error = iso_8583::ISOMessageError;
+impl TryFrom<&ISORequest> for iso8583::ISOMessage {
+    type Error = iso8583::ISOMessageError;
 
     fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
         if !request.is_valid() {
-            return Err(iso_8583::ISOMessageError::RequiredDE);
+            return Err(iso8583::ISOMessageError::RequiredDE);
         }
 
-        let mti = iso_8583::MessageTypeIndicator::try_from(request)?;
+        let mti = iso8583::MessageTypeIndicator::try_from(request)?;
 
         Ok(Self {
             mti,
-            pcode: iso_8583::PCode::try_from(request)?,
-            pem: iso_8583::POSEntryMode::try_from(request)?,
-            card: iso_8583::Card::try_from(request)?,
-            password: iso_8583::Password::try_from(request)?,
+            pcode: iso8583::PCode::try_from(request)?,
+            pem: iso8583::POSEntryMode::try_from(request)?,
+            card: iso8583::Card::try_from(request)?,
+            password: iso8583::Password::try_from(request)?,
         })
     }
 }
 
-impl TryFrom<&ISORequest> for iso_8583::Card {
-    type Error = iso_8583::ISOMessageError;
+impl TryFrom<&ISORequest> for iso8583::Card {
+    type Error = iso8583::ISOMessageError;
 
     fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
         if !request.is_valid() {
-            return Err(iso_8583::ISOMessageError::RequiredDE);
+            return Err(iso8583::ISOMessageError::RequiredDE);
         }
 
         Ok(Self {
-            sequence: request.get_evaluated_info(iso_8583::constants::CARD_SEQUENCE),
-            number: request.get_evaluated_info(iso_8583::constants::CARD_NUMBER),
-            expiration_date: request.get_evaluated_info(iso_8583::constants::CARD_EXPIRATION_DATE),
+            sequence: request.get_evaluated_info(iso8583::constants::CARD_SEQUENCE),
+            number: request.get_evaluated_info(iso8583::constants::CARD_NUMBER),
+            expiration_date: request.get_evaluated_info(iso8583::constants::CARD_EXPIRATION_DATE),
         })
     }
 }
 
-impl TryFrom<&ISORequest> for iso_8583::Password {
-    type Error = iso_8583::ISOMessageError;
+impl TryFrom<&ISORequest> for iso8583::Password {
+    type Error = iso8583::ISOMessageError;
 
     fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
         if !request.is_valid() {
-            return Err(iso_8583::ISOMessageError::RequiredDE);
+            return Err(iso8583::ISOMessageError::RequiredDE);
         }
 
         Ok(Self {
-            value: request.get_evaluated_info(iso_8583::constants::CARD_PASSWORD),
+            value: request.get_evaluated_info(iso8583::constants::CARD_PASSWORD),
         })
     }
 }
 
-impl TryFrom<&ISORequest> for iso_8583::MessageTypeIndicator {
-    type Error = iso_8583::ISOMessageError;
+impl TryFrom<&ISORequest> for iso8583::MessageTypeIndicator {
+    type Error = iso8583::ISOMessageError;
 
     fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
         let mti = match request.get_mti() {
             Some(v) => v,
-            None => return Err(iso_8583::ISOMessageError::UnsuppotedMTI),
+            None => return Err(iso8583::ISOMessageError::UnsuppotedMTI),
         };
 
         match mti.as_str() {
-            "0100" => Ok(iso_8583::MessageTypeIndicator::AuthorizationRequest),
-            "0400" => Ok(iso_8583::MessageTypeIndicator::ReversalRequest),
-            _ => Err(iso_8583::ISOMessageError::UnsuppotedMTI),
+            "0100" => Ok(iso8583::MessageTypeIndicator::AuthorizationRequest),
+            "0400" => Ok(iso8583::MessageTypeIndicator::ReversalRequest),
+            _ => Err(iso8583::ISOMessageError::UnsuppotedMTI),
         }
     }
 }
 
-impl TryFrom<&ISORequest> for iso_8583::PCode {
-    type Error = iso_8583::ISOMessageError;
+impl TryFrom<&ISORequest> for iso8583::PCode {
+    type Error = iso8583::ISOMessageError;
 
     fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
         if !request.is_valid() {
-            return Err(iso_8583::ISOMessageError::RequiredDE);
+            return Err(iso8583::ISOMessageError::RequiredDE);
         }
 
-        let pcode = request.get_evaluated_info(iso_8583::constants::PCODE);
+        let pcode = request.get_evaluated_info(iso8583::constants::PCODE);
         let pcode = &pcode[0..2];
 
         match pcode {
-            "00" => Ok(iso_8583::PCode::Purchase),
-            "01" => Ok(iso_8583::PCode::Withdraw),
-            "17" => Ok(iso_8583::PCode::WithdrawDisbursement),
-            "20" => Ok(iso_8583::PCode::Consultation),
-            "28" => Ok(iso_8583::PCode::Charge),
-            _ => Err(iso_8583::ISOMessageError::UnsupportedPCode),
+            "00" => Ok(iso8583::PCode::Purchase),
+            "01" => Ok(iso8583::PCode::Withdraw),
+            "17" => Ok(iso8583::PCode::WithdrawDisbursement),
+            "20" => Ok(iso8583::PCode::Consultation),
+            "28" => Ok(iso8583::PCode::Charge),
+            _ => Err(iso8583::ISOMessageError::UnsupportedPCode),
         }
     }
 }
 
-impl TryFrom<&ISORequest> for iso_8583::POSEntryMode {
-    type Error = iso_8583::ISOMessageError;
+impl TryFrom<&ISORequest> for iso8583::POSEntryMode {
+    type Error = iso8583::ISOMessageError;
 
     fn try_from(request: &ISORequest) -> Result<Self, Self::Error> {
         if !request.is_valid() {
-            return Err(iso_8583::ISOMessageError::RequiredDE);
+            return Err(iso8583::ISOMessageError::RequiredDE);
         }
 
-        let pem = request.get_evaluated_info(iso_8583::constants::PEM);
+        let pem = request.get_evaluated_info(iso8583::constants::PEM);
         let pem = &pem[0..2];
 
         match pem {
-            "01" => Ok(iso_8583::POSEntryMode::Manual),
-            "02" => Ok(iso_8583::POSEntryMode::MagneticStripe),
-            "05" => Ok(iso_8583::POSEntryMode::Chip),
-            "07" => Ok(iso_8583::POSEntryMode::Contactless),
-            "10" => Ok(iso_8583::POSEntryMode::CredentialOnFile),
-            "79" => Ok(iso_8583::POSEntryMode::HybridTerminal),
-            "80" => Ok(iso_8583::POSEntryMode::MagneticStripeRead),
-            "81" => Ok(iso_8583::POSEntryMode::EletronicCommerce),
-            "90" => Ok(iso_8583::POSEntryMode::AutoEntryMagneticStripe),
-            _ => Err(iso_8583::ISOMessageError::UnsupportedPEM),
+            "01" => Ok(iso8583::POSEntryMode::Manual),
+            "02" => Ok(iso8583::POSEntryMode::MagneticStripe),
+            "05" => Ok(iso8583::POSEntryMode::Chip),
+            "07" => Ok(iso8583::POSEntryMode::Contactless),
+            "10" => Ok(iso8583::POSEntryMode::CredentialOnFile),
+            "79" => Ok(iso8583::POSEntryMode::HybridTerminal),
+            "80" => Ok(iso8583::POSEntryMode::MagneticStripeRead),
+            "81" => Ok(iso8583::POSEntryMode::EletronicCommerce),
+            "90" => Ok(iso8583::POSEntryMode::AutoEntryMagneticStripe),
+            _ => Err(iso8583::ISOMessageError::UnsupportedPEM),
         }
     }
 }
@@ -190,19 +190,19 @@ mod tests {
     fn test_request_should_has_valid_state() {
         let fields = vec![
             Field {
-                id: iso_8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
+                id: iso8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
                 value: "0100".to_string(),
             },
             Field {
-                id: iso_8583::constants::CARD_NUMBER.to_string(),
+                id: iso8583::constants::CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
             Field {
-                id: iso_8583::constants::PCODE.to_string(),
+                id: iso8583::constants::PCODE.to_string(),
                 value: "000000".to_string(),
             },
             Field {
-                id: iso_8583::constants::PEM.to_string(),
+                id: iso8583::constants::PEM.to_string(),
                 value: "051".to_string(),
             },
         ];
@@ -215,7 +215,7 @@ mod tests {
     #[test]
     fn test_request_should_has_invalid_state() {
         let fields = vec![Field {
-            id: iso_8583::constants::CARD_NUMBER.to_string(),
+            id: iso8583::constants::CARD_NUMBER.to_string(),
             value: "5276600404324025".to_string(),
         }];
 
@@ -228,11 +228,11 @@ mod tests {
     fn test_request_should_has_valid_mti() {
         let fields = vec![
             Field {
-                id: iso_8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
+                id: iso8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
                 value: "0100".to_string(),
             },
             Field {
-                id: iso_8583::constants::CARD_NUMBER.to_string(),
+                id: iso8583::constants::CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
         ];
@@ -241,7 +241,7 @@ mod tests {
 
         assert!(request.has_valid_mti());
         assert_eq!(
-            request.get_info(iso_8583::constants::MESSAGE_TYPE_INDICATOR),
+            request.get_info(iso8583::constants::MESSAGE_TYPE_INDICATOR),
             Some("0100".to_string())
         );
     }
@@ -254,7 +254,7 @@ mod tests {
                 value: "0100".to_string(),
             },
             Field {
-                id: iso_8583::constants::CARD_NUMBER.to_string(),
+                id: iso8583::constants::CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
         ];
@@ -263,7 +263,7 @@ mod tests {
 
         assert!(!request.has_valid_mti());
         assert_eq!(
-            request.get_info(iso_8583::constants::MESSAGE_TYPE_INDICATOR),
+            request.get_info(iso8583::constants::MESSAGE_TYPE_INDICATOR),
             None
         );
     }
@@ -272,34 +272,34 @@ mod tests {
     fn test_parse_request_should_be_success() -> Result<(), Box<dyn error::Error>> {
         let fields = vec![
             Field {
-                id: iso_8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
+                id: iso8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
                 value: "0100".to_string(),
             },
             Field {
-                id: iso_8583::constants::CARD_NUMBER.to_string(),
+                id: iso8583::constants::CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
             Field {
-                id: iso_8583::constants::PCODE.to_string(),
+                id: iso8583::constants::PCODE.to_string(),
                 value: "000000".to_string(),
             },
             Field {
-                id: iso_8583::constants::PEM.to_string(),
+                id: iso8583::constants::PEM.to_string(),
                 value: "051".to_string(),
             },
         ];
 
         let request = ISORequest::new(fields);
 
-        let iso = iso_8583::ISOMessage::try_from(&request)?;
+        let iso = iso8583::ISOMessage::try_from(&request)?;
 
         assert_eq!(
             iso.mti,
-            iso_8583::MessageTypeIndicator::AuthorizationRequest
+            iso8583::MessageTypeIndicator::AuthorizationRequest
         );
         assert_eq!(iso.card.number, "5276600404324025");
-        assert_eq!(iso.pcode, iso_8583::PCode::Purchase);
-        assert_eq!(iso.pem, iso_8583::POSEntryMode::Chip);
+        assert_eq!(iso.pcode, iso8583::PCode::Purchase);
+        assert_eq!(iso.pem, iso8583::POSEntryMode::Chip);
 
         Ok(())
     }
@@ -308,19 +308,19 @@ mod tests {
     fn test_parse_mti_0100_from_request_should_be_success() -> Result<(), Box<dyn error::Error>> {
         let fields = vec![
             Field {
-                id: iso_8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
+                id: iso8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
                 value: "0100".to_string(),
             },
             Field {
-                id: iso_8583::constants::PCODE.to_string(),
+                id: iso8583::constants::PCODE.to_string(),
                 value: "000000".to_string(),
             },
             Field {
-                id: iso_8583::constants::CARD_NUMBER.to_string(),
+                id: iso8583::constants::CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
             Field {
-                id: iso_8583::constants::PEM.to_string(),
+                id: iso8583::constants::PEM.to_string(),
                 value: "81".to_string(),
             },
         ];
@@ -329,11 +329,11 @@ mod tests {
 
         assert!(request.is_valid());
 
-        let iso = iso_8583::ISOMessage::try_from(&request)?;
+        let iso = iso8583::ISOMessage::try_from(&request)?;
 
         assert_eq!(
             iso.mti,
-            iso_8583::MessageTypeIndicator::AuthorizationRequest
+            iso8583::MessageTypeIndicator::AuthorizationRequest
         );
 
         Ok(())
@@ -343,19 +343,19 @@ mod tests {
     fn test_parse_mti_0400_from_request_should_be_success() -> Result<(), Box<dyn error::Error>> {
         let fields = vec![
             Field {
-                id: iso_8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
+                id: iso8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
                 value: "0400".to_string(),
             },
             Field {
-                id: iso_8583::constants::PCODE.to_string(),
+                id: iso8583::constants::PCODE.to_string(),
                 value: "000000".to_string(),
             },
             Field {
-                id: iso_8583::constants::CARD_NUMBER.to_string(),
+                id: iso8583::constants::CARD_NUMBER.to_string(),
                 value: "5276600404324025".to_string(),
             },
             Field {
-                id: iso_8583::constants::PEM.to_string(),
+                id: iso8583::constants::PEM.to_string(),
                 value: "81".to_string(),
             },
         ];
@@ -364,9 +364,9 @@ mod tests {
 
         assert!(request.is_valid());
 
-        let iso = iso_8583::ISOMessage::try_from(&request)?;
+        let iso = iso8583::ISOMessage::try_from(&request)?;
 
-        assert_eq!(iso.mti, iso_8583::MessageTypeIndicator::ReversalRequest);
+        assert_eq!(iso.mti, iso8583::MessageTypeIndicator::ReversalRequest);
 
         Ok(())
     }
@@ -374,30 +374,30 @@ mod tests {
     #[test]
     fn test_required_de_0100_error_should_be_required_de() {
         let fields = vec![Field {
-            id: iso_8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
+            id: iso8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
             value: "0100".to_string(),
         }];
 
         let request = ISORequest::new(fields);
 
-        let iso = iso_8583::ISOMessage::try_from(&request);
+        let iso = iso8583::ISOMessage::try_from(&request);
 
         assert!(iso.is_err());
-        assert_eq!(iso.unwrap_err(), iso_8583::ISOMessageError::RequiredDE);
+        assert_eq!(iso.unwrap_err(), iso8583::ISOMessageError::RequiredDE);
     }
 
     #[test]
     fn test_required_de_0400_error_should_be_required_de() {
         let fields = vec![Field {
-            id: iso_8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
+            id: iso8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
             value: "0400".to_string(),
         }];
 
         let request = ISORequest::new(fields);
 
-        let iso = iso_8583::ISOMessage::try_from(&request);
+        let iso = iso8583::ISOMessage::try_from(&request);
 
         assert!(iso.is_err());
-        assert_eq!(iso.unwrap_err(), iso_8583::ISOMessageError::RequiredDE);
+        assert_eq!(iso.unwrap_err(), iso8583::ISOMessageError::RequiredDE);
     }
 }
