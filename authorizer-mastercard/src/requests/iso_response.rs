@@ -5,7 +5,7 @@ use aurora_8583::iso8583;
 pub struct ISOResponsePrepareParams {
     pub request: ISORequest,
     pub transaction: domain::Transactions,
-    pub authorizer_result: Result<domain::authorizer::Result, domain::authorizer::Error>,
+    pub authorizer_result: Result<domain::authorizer::MyResult, domain::authorizer::MyError>,
 }
 
 pub struct ISOResponse {
@@ -54,7 +54,7 @@ impl From<ISOResponsePrepareParams> for ISOResponse {
 
         //TODO: remover DE de acordo com a transaction
         match value.transaction {
-            domain::Transactions::OnlinePurchase(_) => {
+            domain::Transactions::OnlinePurchase => {
                 response.add_value_field(iso8583::constants::MESSAGE_TYPE_INDICATOR.to_owned(), "0110".to_owned());
             }
             _ => (),
