@@ -5,54 +5,61 @@ on:
     branches:
       - master
     paths-ignore:
-      - '**.md'
+      - "**.md"
   pull_request:
     paths-ignore:
-      - '**.md'
+      - "**.md"
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --verbose
+      - name: build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --verbose
 
-    - name: rust clippy
-      uses: actions-rs/cargo@v1
-      with:
-        command: clippy
-        args: --all -- -D warnings
+      - name: clean
+        uses: actions-rs/cargo@v1
+        with:
+          command: clean
 
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: nightly
-        override: true
+      - name: lint
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all -- -D warnings
 
-    - uses: actions-rs/cargo@v1
-      with:
-        command: clean
+      - name: set nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
 
-    - name: test
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --all-features --no-fail-fast
-      env:
-        CARGO_INCREMENTAL: '0'
-        RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'
-    
-    - name: Coverage
-      uses: actions-rs/grcov@v0.1
-      
-    - name: codecov upload
-      uses: codecov/codecov-action@v1
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ steps.coverage.outputs.report }}
-        fail_ci_if_error: true
+      - name: clean
+        uses: actions-rs/cargo@v1
+        with:
+          command: clean
+
+      - name: test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-features --no-fail-fast
+        env:
+          CARGO_INCREMENTAL: "0"
+          RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
+
+      - name: coverage
+        uses: actions-rs/grcov@v0.1
+
+      - name: codecov
+        uses: codecov/codecov-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ steps.coverage.outputs.report }}
+          fail_ci_if_error: true

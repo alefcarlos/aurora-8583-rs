@@ -29,10 +29,6 @@ impl<'a, T: Eq + Hash> Default for Authorizer<'a, T> {
 }
 
 impl<'a, T: Eq + Hash> Authorizer<'a, T> {
-    pub fn new() -> Self {
-        Default::default()
-    }
-
     pub fn add_validation(&mut self, transaction: T, fun: &'a ValidatorCallback) {
         let callbacks = self
             .validations
@@ -82,7 +78,7 @@ mod tests {
 
     #[test]
     fn should_valid() {
-        let mut authorizer = Authorizer::<MyTransaction>::new();
+        let mut authorizer = Authorizer::<MyTransaction>::default();
 
         authorizer.add_validation(MyTransaction::Online, &|_iso| Ok(Validated));
         authorizer.add_validation(MyTransaction::Online, &|_iso| Ok(Validated));
@@ -95,7 +91,7 @@ mod tests {
 
     #[test]
     fn should_fail() {
-        let mut authorizer = Authorizer::<MyTransaction>::new();
+        let mut authorizer = Authorizer::<MyTransaction>::default();
 
         authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
         authorizer.add_validation(MyTransaction::Gift, &|_iso| {
@@ -110,7 +106,7 @@ mod tests {
 
     #[test]
     fn should_fail_when_validation_is_not_found() {
-        let mut authorizer = Authorizer::<MyTransaction>::new();
+        let mut authorizer = Authorizer::<MyTransaction>::default();
 
         authorizer.add_validation(MyTransaction::Online, &|_iso| {
             Err(Unvalidated("deu ruim".to_owned()))
