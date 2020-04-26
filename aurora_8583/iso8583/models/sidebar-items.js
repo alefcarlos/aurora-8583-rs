@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ISOMessageError",""],["MessageTypeIndicator",""],["PCode",""],["POSEntryMode",""]],"struct":[["Card",""],["ISOMessage","An struct to represent ISO 8583-1"],["Password",""]]});

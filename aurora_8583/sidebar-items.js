@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["iso8583",""]],"struct":[["Authorized",""],["Authorizer",""],["Unauthorized",""],["Unvalidated",""],["Validated",""]],"type":[["AuthResult",""],["ValidateResult",""]]});

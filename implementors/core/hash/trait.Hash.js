@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["authorizer_mastercard"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"enum\" href=\"authorizer_mastercard/domain/enum.Transactions.html\" title=\"enum authorizer_mastercard::domain::Transactions\">Transactions</a>","synthetic":false,"types":["authorizer_mastercard::domain::transactions::Transactions"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

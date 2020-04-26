@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["MyError",""],["MyResult",""],["ValidationResult",""]],"struct":[["Authorizer",""],["ValidationSomeResult",""]]});
