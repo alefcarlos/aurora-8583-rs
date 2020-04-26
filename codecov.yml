@@ -1,0 +1,9 @@
+coverage:
+  status:
+    project:
+      aurora-8583:
+        paths:
+          - aurora-8583
+      authorizer-mastercard:
+        paths:
+          - authorizer-mastercard

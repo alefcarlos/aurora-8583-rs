@@ -1,13 +1,6 @@
 use crate::iso8583::ISOMessage;
 use std::{collections::HashMap, hash::Hash};
 
-// TODO: maybe remove this?
-pub trait TryAuthorizerTransaction<T> {
-    type Error;
-
-    fn try_authorize(&self) -> Result<T, Self::Error>;
-}
-
 // TODO: decide the corect types to use here
 pub struct Unauthorized(pub String);
 pub struct Authorized(pub String, pub u32);
