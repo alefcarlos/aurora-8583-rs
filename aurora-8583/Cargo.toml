@@ -3,10 +3,10 @@ name = "aurora-8583"
 version = "0.1.0"
 authors = ["Alef Carlos <alef.carlos@gmail.com>"]
 edition = "2018"
-repository = "https://github.com/alefcarlos/authflow_rust"
+repository = "https://github.com/alefcarlos/aurora-8583-rs"
 
 [badges]
-codecov = { repository = "https://github.com/alefcarlos/authflow_rust", branch = "master", service = "github" }
+codecov = { repository = "https://github.com/alefcarlos/aurora-8583-rs", branch = "master", service = "github" }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
