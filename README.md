@@ -16,19 +16,3 @@ Com intuito de aprender Rust resolvi reescrever um módulo do processo de autori
 ## ISO8583
 
 Iremos modelar uma [ISO8583](https://en.wikipedia.org/wiki/ISO_8583) e criar  algumas regras de valições dependendo do tipo de transação.
-
-## Validações
-
-Para criar uma nova validação é necessário implementar a trait `TryValidate`.
-
-
-```rust
-pub trait TryValidate<T, E> {
-    fn try_validate(&self) -> Result<T, E>;
-}
-```
-
-Validações de exemplo:
-
-- Validar data de expiração
-- Validar CVC
