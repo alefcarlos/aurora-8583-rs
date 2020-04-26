@@ -37,7 +37,7 @@ impl<'a, T: Eq + Hash> Authorizer<'a, T> {
         let callbacks = self
             .validations
             .entry(transaction)
-            .or_insert_with(|| vec![]);
+            .or_insert_with(Vec::new);
 
         callbacks.push(fun);
     }

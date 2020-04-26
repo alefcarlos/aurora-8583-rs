@@ -30,7 +30,7 @@ impl ISOResponse {
 
         match index {
             Some(v) => self.fields.remove(v),
-            None => return,
+            None => return
         };
     }
 
