@@ -20,31 +20,30 @@ jobs:
     - name: Build
       run: cargo build --verbose
 
-  lint:
+    - uses: actions-rs/cargo@v1
+      with:
+        command: clean
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+
+    - name: test
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --all-features --no-fail-fast
+      env:
+        CARGO_INCREMENTAL: '0'
+        RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'
     
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clean
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all-features --no-fail-fast
-        env:
-          CARGO_INCREMENTAL: '0'
-          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'
-      - name: Coverage
-        uses: actions-rs/grcov@v0.1
-        
-      - name: codecov upload
-        uses: codecov/codecov-action@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ steps.coverage.outputs.report }}
-          fail_ci_if_error: true
+    - name: Coverage
+      uses: actions-rs/grcov@v0.1
+      
+    - name: codecov upload
+      uses: codecov/codecov-action@v1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ steps.coverage.outputs.report }}
+        fail_ci_if_error: true
