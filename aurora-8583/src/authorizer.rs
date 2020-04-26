@@ -20,15 +20,24 @@ where
     validations: HashMap<T, Vec<&'a ValidatorCallback>>,
 }
 
-impl<'a, T: Eq + Hash> Authorizer<'a, T> {
-    pub fn new() -> Self {
+impl<'a, T: Eq + Hash> Default for Authorizer<'a, T> {
+    fn default() -> Self {
         Self {
             validations: HashMap::new(),
         }
     }
+}
+
+impl<'a, T: Eq + Hash> Authorizer<'a, T> {
+    pub fn new() -> Self {
+        Default::default()
+    }
 
     pub fn add_validation(&mut self, transaction: T, fun: &'a ValidatorCallback) {
-        let callbacks = self.validations.entry(transaction).or_insert(vec![]);
+        let callbacks = self
+            .validations
+            .entry(transaction)
+            .or_insert_with(|| vec![]);
 
         callbacks.push(fun);
     }
@@ -98,19 +107,19 @@ mod tests {
 
         assert_eq!(result.is_err(), true);
     }
-    
+
     #[test]
     fn should_fail_when_validation_is_not_found() {
         let mut authorizer = Authorizer::<MyTransaction>::new();
-        
+
         authorizer.add_validation(MyTransaction::Online, &|_iso| {
             Err(Unvalidated("deu ruim".to_owned()))
         });
-        
+
         let iso = generate_iso_message();
-        
+
         let result = authorizer.perform(&MyTransaction::Gift, &iso);
-        
+
         assert_eq!(result.is_err(), true);
         // assert_eq!(result.err(), Err(Unauthorized(
         //     "Validation not found for this transaction type".to_owned(),
