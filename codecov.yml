@@ -5,6 +5,7 @@ coverage:
         target: 100%
         paths:
           - aurora-8583
+          - "!aurora-8583/src/iso8583/models.rs"
       authorizer-mastercard:
         paths:
           - authorizer-mastercard
