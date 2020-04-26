@@ -1,5 +1,7 @@
 ![Rust](https://github.com/alefcarlos/authflow_rust/workflows/Rust/badge.svg)
 
+[![codecov](https://codecov.io/gh/alefcarlos/authflow_rust/branch/master/graph/badge.svg)](https://codecov.io/gh/alefcarlos/authflow_rust)
+
 # aurora-8583
 
 > aurora-8583 é um conjunto de utilitários para ajudar a escrever fluxo de autorização de uma transação `ISO8583`
