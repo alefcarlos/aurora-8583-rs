@@ -3,11 +3,9 @@ coverage:
     project:
       default: false
       aurora-8583:
-        target: 90%
+        target: 60%
         paths:
           - aurora-8583
-        ignore:
-          - aurora-8583/src/iso8583/models.rs
       authorizer-mastercard:
         paths:
           - authorizer-mastercard
