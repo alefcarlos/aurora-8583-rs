@@ -2,6 +2,7 @@ coverage:
   status:
     project:
       aurora-8583:
+        target: 100%
         paths:
           - aurora-8583
       authorizer-mastercard:
