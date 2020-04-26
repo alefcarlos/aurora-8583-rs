@@ -1,15 +1,14 @@
 use aurora_8583::iso8583;
-use authorizer_mastercard::requests;
 use authorizer_mastercard::domain;
-use std::error;
+use authorizer_mastercard::requests;
 use std::convert::TryFrom;
-
+use std::error;
 
 mod tests {
     use super::*;
-    
+
     #[test]
-    fn test_should_ok_when_request_is_valid() -> Result<(), Box<dyn error::Error>>  {
+    fn test_should_ok_when_request_is_valid() -> Result<(), Box<dyn error::Error>> {
         let fields = vec![
             requests::Field {
                 id: iso8583::constants::MESSAGE_TYPE_INDICATOR.to_string(),
@@ -38,14 +37,22 @@ mod tests {
 
         //ApiHandle
 
+        // Converte request em Message
+        let iso = iso8583::ISOMessage::try_from(&request)?;
+
         //Aplicar formatador de entrada
-        let transaction = domain::Transactions::try_from(&request)?;
+        let transaction = domain::Transactions::try_from(&iso)?;
 
         //Se TransactionType::None retornar 400 - Bad Request
-        assert!(transaction != domain::Transactions::None, "Transaction type must be different from TransactionType::None");
-        
+        assert!(
+            transaction != domain::Transactions::None,
+            "Transaction type must be different from TransactionType::None"
+        );
+
+        let authorizer = domain::authorizer::Authorizer::new();
+
         //Executar flow
-        let authorizer_result = domain::authorizer::execute(&transaction);
+        let authorizer_result = authorizer.execute(&transaction, &iso);
 
         let result_param = requests::ISOResponsePrepareParams {
             request,
@@ -55,7 +62,9 @@ mod tests {
 
         //Aplicar formatador de saída
         let iso_response = requests::ISOResponse::from(result_param);
-        let de_0 = iso_response.get_info(iso8583::constants::MESSAGE_TYPE_INDICATOR).unwrap();
+        let de_0 = iso_response
+            .get_info(iso8583::constants::MESSAGE_TYPE_INDICATOR)
+            .unwrap();
 
         assert_eq!(de_0, "0110", "de 0 should be 0110, but is {}", de_0);
 
