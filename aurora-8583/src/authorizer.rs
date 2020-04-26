@@ -77,7 +77,6 @@ mod tests {
 
         authorizer.add_validation(MyTransaction::Online, &|_iso| Ok(Validated));
         authorizer.add_validation(MyTransaction::Online, &|_iso| Ok(Validated));
-        authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
 
         let iso = generate_iso_message();
         let result = authorizer.perform(&MyTransaction::Online, &iso);
@@ -90,9 +89,9 @@ mod tests {
         let mut authorizer = Authorizer::<MyTransaction>::new();
 
         authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
-        authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
-        authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
-
+        authorizer.add_validation(MyTransaction::Gift, &|_iso| {
+            Err(Unvalidated("deu ruim".to_owned()))
+        });
         let iso = generate_iso_message();
 
         let result = authorizer.perform(&MyTransaction::Gift, &iso);
@@ -104,11 +103,9 @@ mod tests {
     fn should_fail_when_validation_is_not_found() {
         let mut authorizer = Authorizer::<MyTransaction>::new();
         
-        authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
-        authorizer.add_validation(MyTransaction::Gift, &|_iso| {
+        authorizer.add_validation(MyTransaction::Online, &|_iso| {
             Err(Unvalidated("deu ruim".to_owned()))
         });
-        authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
         
         let iso = generate_iso_message();
         
