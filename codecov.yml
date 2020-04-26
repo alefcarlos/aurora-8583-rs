@@ -2,7 +2,7 @@ coverage:
   status:
     project:
       aurora-8583:
-        target: 100%
+        target: 90%
         paths:
           - aurora-8583
           - "!aurora-8583/src/iso8583/models.rs"
