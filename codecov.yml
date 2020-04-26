@@ -1,0 +1,11 @@
+coverage:
+  status:
+    project:
+      default: false
+      aurora-8583:
+        target: 60%
+        paths:
+          - aurora-8583
+      authorizer-mastercard:
+        paths:
+          - authorizer-mastercard

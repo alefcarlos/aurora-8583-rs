@@ -14,16 +14,18 @@ pub struct Authorizer<'a> {
 
 type ExecutorResult = Result<MyResult, MyError>;
 
-impl<'a> Authorizer<'a> {
-    pub fn new() -> Self {
-        let mut authorizer = AuroraAuth::<Transactions>::new();
+impl<'a> Default for Authorizer<'a> {
+    fn default() -> Self {
+        let mut authorizer = AuroraAuth::<Transactions>::default();
 
         authorizer.add_validation(Transactions::OnlinePurchase, &validate_cvc);
         authorizer.add_validation(Transactions::OnlinePurchase, &validate_expiration);
 
         Self { authorizer }
     }
+}
 
+impl<'a> Authorizer<'a> {
     pub fn execute(&self, trx: &Transactions, iso_message: &ISOMessage) -> ExecutorResult {
         //TODO: persistir transacao no banco
 

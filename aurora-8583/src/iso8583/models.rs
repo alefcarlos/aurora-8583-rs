@@ -52,10 +52,10 @@ pub enum PCode {
 #[repr(i32)]
 #[derive(PartialEq, Debug)]
 pub enum POSEntryMode {
-    Manual = 01,
-    MagneticStripe = 02,
-    Chip = 05,
-    Contactless = 07,
+    Manual = 1,
+    MagneticStripe = 2,
+    Chip = 5,
+    Contactless = 7,
     CredentialOnFile = 10,
     HybridTerminal = 79,
     MagneticStripeRead = 80,

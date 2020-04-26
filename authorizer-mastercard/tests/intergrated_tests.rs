@@ -49,7 +49,7 @@ mod tests {
             "Transaction type must be different from TransactionType::None"
         );
 
-        let authorizer = domain::authorizer::Authorizer::new();
+        let authorizer = domain::authorizer::Authorizer::default();
 
         //Executar flow
         let authorizer_result = authorizer.execute(&transaction, &iso);

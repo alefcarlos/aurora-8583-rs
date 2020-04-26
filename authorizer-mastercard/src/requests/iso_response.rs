@@ -28,10 +28,9 @@ impl ISOResponse {
     fn rm_field(&mut self, id: &str) {
         let index = self.fields.iter().position(|f| f.id == id);
 
-        match index {
-            Some(v) => self.fields.remove(v),
-            None => return (),
-        };
+        if let Some(v) = index {
+            self.fields.remove(v);
+        }
     }
 
     ///Gets value from DE
@@ -53,12 +52,23 @@ impl From<ISOResponsePrepareParams> for ISOResponse {
         response.rm_field(iso8583::constants::MESSAGE_TYPE_INDICATOR);
 
         //TODO: remover DE de acordo com a transaction
-        match value.transaction {
-            domain::Transactions::OnlinePurchase => {
-                response.add_value_field(iso8583::constants::MESSAGE_TYPE_INDICATOR.to_owned(), "0110".to_owned());
-            }
-            _ => (),
+
+        //por enquanto somente 1
+        if let domain::Transactions::OnlinePurchase = value.transaction {
+            response.add_value_field(
+                iso8583::constants::MESSAGE_TYPE_INDICATOR.to_owned(),
+                "0110".to_owned(),
+            );
         }
+        // match value.transaction {
+        //     domain::Transactions::OnlinePurchase => {
+        //         response.add_value_field(
+        //             iso8583::constants::MESSAGE_TYPE_INDICATOR.to_owned(),
+        //             "0110".to_owned(),
+        //         );
+        //     }
+        //     _ => (),
+        // }
 
         //TODO: aplicar novos DE
 
