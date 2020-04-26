@@ -77,7 +77,7 @@ mod tests {
 
         authorizer.add_validation(MyTransaction::Online, &|_iso| Ok(Validated));
         authorizer.add_validation(MyTransaction::Online, &|_iso| Ok(Validated));
-        authorizer.add_validation(MyTransaction::Online, &|_iso| Ok(Validated));
+        authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
 
         let iso = generate_iso_message();
         let result = authorizer.perform(&MyTransaction::Online, &iso);
@@ -90,9 +90,7 @@ mod tests {
         let mut authorizer = Authorizer::<MyTransaction>::new();
 
         authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
-        authorizer.add_validation(MyTransaction::Gift, &|_iso| {
-            Err(Unvalidated("deu ruim".to_owned()))
-        });
+        authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
         authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
 
         let iso = generate_iso_message();
@@ -100,6 +98,26 @@ mod tests {
         let result = authorizer.perform(&MyTransaction::Gift, &iso);
 
         assert_eq!(result.is_err(), true);
+    }
+    
+    #[test]
+    fn should_fail_when_validation_is_not_found() {
+        let mut authorizer = Authorizer::<MyTransaction>::new();
+        
+        authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
+        authorizer.add_validation(MyTransaction::Gift, &|_iso| {
+            Err(Unvalidated("deu ruim".to_owned()))
+        });
+        authorizer.add_validation(MyTransaction::Gift, &|_iso| Ok(Validated));
+        
+        let iso = generate_iso_message();
+        
+        let result = authorizer.perform(&MyTransaction::Gift, &iso);
+        
+        assert_eq!(result.is_err(), true);
+        // assert_eq!(result.err(), Err(Unauthorized(
+        //     "Validation not found for this transaction type".to_owned(),
+        // )));
     }
 
     fn generate_iso_message() -> ISOMessage {
