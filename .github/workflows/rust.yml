@@ -23,10 +23,6 @@ jobs:
         command: build
         args: --verbose
 
-    - uses: actions-rs/cargo@v1
-      with:
-        command: clean
-
     - name: rust clippy
       uses: actions-rs/cargo@v1
       with:
@@ -37,6 +33,10 @@ jobs:
       with:
         toolchain: nightly
         override: true
+
+    - uses: actions-rs/cargo@v1
+      with:
+        command: clean
 
     - name: test
       uses: actions-rs/cargo@v1
